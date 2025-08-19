@@ -1,0 +1,328 @@
+/* Search Page Specific Styles */
+
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
+}
+
+/* Additional CSS fixes */
+
+/* Force CSS to load with higher specificity */
+html body {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+    min-height: 100vh !important;
+    font-family: 'Inter', sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Modern Breadcrumb with higher specificity */
+nav .container .modern-breadcrumb {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 20px !important;
+    padding: 1rem 1.5rem !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+    margin-bottom: 2rem !important;
+}
+
+.modern-breadcrumb .breadcrumb-link {
+    color: #667eea !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 15px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.modern-breadcrumb .breadcrumb-link:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15)) !important;
+    color: #764ba2 !important;
+    transform: translateY(-2px) !important;
+    text-decoration: none !important;
+}
+
+.modern-breadcrumb .breadcrumb-item.active {
+    color: #1a202c !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+    border-radius: 15px !important;
+}
+
+/* Upload Hero with higher specificity */
+.container-fluid .upload-hero-container {
+    position: relative !important;
+    min-height: 80vh !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    border-radius: 32px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 15s ease infinite !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 50px 100px -20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    margin-bottom: 3rem !important;
+}
+
+.upload-hero-content {
+    position: relative !important;
+    z-index: 10 !important;
+    text-align: center !important;
+    max-width: 800px !important;
+    padding: 0 2rem !important;
+    color: white !important;
+}
+
+.upload-hero-title {
+    font-size: 4rem !important;
+    font-weight: 900 !important;
+    line-height: 1.1 !important;
+    margin-bottom: 2rem !important;
+    letter-spacing: -0.02em !important;
+    color: white !important;
+}
+
+.title-line {
+    display: block !important;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+.upload-hero-subtitle {
+    font-size: 1.2rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    line-height: 1.6 !important;
+    margin-bottom: 3rem !important;
+    font-weight: 400 !important;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Upload Form Card */
+.upload-form-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 32px !important;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.1) !important;
+    overflow: hidden !important;
+}
+
+.upload-form-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 2rem !important;
+}
+
+.upload-area {
+    border: 3px dashed rgba(102, 126, 234, 0.3) !important;
+    border-radius: 24px !important;
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.8) 100%) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    min-height: 300px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.upload-area:hover {
+    border-color: rgba(102, 126, 234, 0.6) !important;
+    background: linear-gradient(135deg, rgba(239, 246, 255, 0.9) 0%, rgba(219, 234, 254, 0.9) 100%) !important;
+    transform: translateY(-5px) !important;
+}
+
+/* Hero Badge */
+.hero-badge {
+    display: inline-block !important;
+    padding: 12px 24px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50px !important;
+    margin-bottom: 2rem !important;
+}
+
+.badge-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Upload Icon */
+.upload-icon-container {
+    margin-bottom: 3rem !important;
+    position: relative !important;
+}
+
+.upload-hero-icon {
+    width: 160px !important;
+    height: 160px !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(240, 147, 251, 0.2)) !important;
+    backdrop-filter: blur(30px) !important;
+    border: 2px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    font-size: 4rem !important;
+    color: #fff !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-shadow: 0 0 60px rgba(102, 126, 234, 0.3), 0 0 100px rgba(240, 147, 251, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Feature Tags */
+.upload-features {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 1.5rem !important;
+    flex-wrap: wrap !important;
+    margin-top: 3rem !important;
+}
+
+.feature-tag {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 12px 20px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 25px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.feature-tag:hover {
+    transform: translateY(-3px) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+}
+
+.feature-tag i {
+    font-size: 1rem !important;
+    background: linear-gradient(135deg, #667eea, #4facfe) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* Upload Icon Large */
+.upload-icon-large {
+    width: 80px !important;
+    height: 80px !important;
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    color: white !important;
+    font-size: 2rem !important;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.upload-area:hover .upload-icon-large {
+    transform: scale(1.1) rotate(5deg) !important;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border: none !important;
+    border-radius: 16px !important;
+    padding: 16px 32px !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    transition: all 0.4s ease !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.btn-primary:hover {
+    transform: translateY(-4px) scale(1.05) !important;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Cards */
+.card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    color: white !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 1.5rem !important;
+    border: none !important;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+    border: 2px solid rgba(102, 126, 234, 0.2) !important;
+    border-radius: 15px !important;
+    padding: 0.75rem 1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Progress Bar */
+.progress {
+    height: 8px !important;
+    border-radius: 10px !important;
+    background: #e2e8f0 !important;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #667eea, #764ba2) !important;
+    border-radius: 10px !important;
+    transition: width 0.3s ease !important;
+}
+
+/* Ensure CSS is properly loaded */
+body.search-page {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+}
+
+/* Hide any CSS text that might be showing */
+style[type="text/css"] {
+    display: none !important;
+}
+
+/* Force hide any visible CSS content */
+.css-content {
+    display: none !important;
+}

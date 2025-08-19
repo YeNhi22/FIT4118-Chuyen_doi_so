@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Lịch sử hệ thống</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <h5 class="card-title text-primary">Tổng log</h5>
+                <h2 class="text-primary">{{ system_stats.total_logs }}</h2>
+                <p class="card-text">Trong tháng này</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <h5 class="card-title text-success">Thông tin</h5>
+                <h2 class="text-success">{{ system_stats.info_logs }}</h2>
+                <p class="card-text">Log thông tin</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h5 class="card-title text-warning">Cảnh báo</h5>
+                <h2 class="text-warning">{{ system_stats.warning_logs }}</h2>
+                <p class="card-text">Log cảnh báo</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <h5 class="card-title text-danger">Lỗi</h5>
+                <h2 class="text-danger">{{ system_stats.error_logs }}</h2>
+                <p class="card-text">Log lỗi</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Bộ lọc và tìm kiếm</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Từ ngày</label>
+                        <input type="date" name="from_date" class="form-control" value="{{ request.query_params.get('from_date', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Đến ngày</label>
+                        <input type="date" name="to_date" class="form-control" value="{{ request.query_params.get('to_date', '') }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Mức độ</label>
+                        <select name="log_level" class="form-select">
+                            <option value="">Tất cả</option>
+                            <option value="INFO" {% if request.query_params.get('log_level') == 'INFO' %}selected{% endif %}>Thông tin</option>
+                            <option value="WARNING" {% if request.query_params.get('log_level') == 'WARNING' %}selected{% endif %}>Cảnh báo</option>
+                            <option value="ERROR" {% if request.query_params.get('log_level') == 'ERROR' %}selected{% endif %}>Lỗi</option>
+                            <option value="CRITICAL" {% if request.query_params.get('log_level') == 'CRITICAL' %}selected{% endif %}>Nghiêm trọng</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Module</label>
+                        <select name="module" class="form-select">
+                            <option value="">Tất cả</option>
+                            <option value="contract" {% if request.query_params.get('module') == 'contract' %}selected{% endif %}>Hợp đồng</option>
+                            <option value="user" {% if request.query_params.get('module') == 'user' %}selected{% endif %}>Người dùng</option>
+                            <option value="ocr" {% if request.query_params.get('module') == 'ocr' %}selected{% endif %}>OCR</option>
+                            <option value="system" {% if request.query_params.get('module') == 'system' %}selected{% endif %}>Hệ thống</option>
+                            <option value="backup" {% if request.query_params.get('module') == 'backup' %}selected{% endif %}>Sao lưu</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Tìm kiếm</label>
+                        <input type="text" name="search" class="form-control" placeholder="Từ khóa..." 
+                               value="{{ request.query_params.get('search', '') }}">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Lọc</button>
+                        <a href="/settings/system-log" class="btn btn-outline-secondary">Làm mới</a>
+                        <button type="button" class="btn btn-outline-info" onclick="exportLogs()">Xuất log</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Nhật ký hệ thống</h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-primary" onclick="refreshLogs()">
+                        <i class="bi bi-arrow-clockwise"></i> Làm mới
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="clearOldLogs()">
+                        <i class="bi bi-trash"></i> Xóa log cũ
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Mức độ</th>
+                                <th>Module</th>
+                                <th>Người dùng</th>
+                                <th>Hành động</th>
+                                <th>Chi tiết</th>
+                                <th>IP</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in system_logs %}
+                            <tr class="{% if log.level == 'ERROR' %}table-danger{% elif log.level == 'WARNING' %}table-warning{% elif log.level == 'INFO' %}table-info{% endif %}">
+                                <td>
+                                    <small class="text-muted">
+                                        {{ log.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if log.level == 'INFO' else 'warning' if log.level == 'WARNING' else 'danger' if log.level == 'ERROR' else 'dark' }}">
+                                        {{ log.level }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ log.module }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ log.user_name or 'System' }}</span>
+                                </td>
+                                <td>{{ log.action }}</td>
+                                <td>
+                                    <div class="small text-muted">
+                                        {{ log.details[:100] }}{% if log.details|length > 100 %}...{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ log.ip_address or 'N/A' }}</small>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info" onclick="viewLogDetails({{ log.id }})">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if system_logs|length > 20 %}
+                <nav aria-label="Phân trang">
+                    <ul class="pagination justify-content-center">
+                        {% if page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page - 1 }}&{{ request.query_params|urlencode }}">Trước</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for p in range(1, total_pages + 1) %}
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="?page={{ p }}&{{ request.query_params|urlencode }}">{{ p }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if page < total_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page + 1 }}&{{ request.query_params|urlencode }}">Sau</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Thống kê theo module</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Tổng</th>
+                                <th>Thông tin</th>
+                                <th>Cảnh báo</th>
+                                <th>Lỗi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for module_stat in module_stats %}
+                            <tr>
+                                <td><strong>{{ module_stat.name }}</strong></td>
+                                <td>{{ module_stat.total }}</td>
+                                <td><span class="text-success">{{ module_stat.info }}</span></td>
+                                <td><span class="text-warning">{{ module_stat.warning }}</span></td>
+                                <td><span class="text-danger">{{ module_stat.error }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Hoạt động gần đây</h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for activity in recent_activities %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-{{ 'success' if activity.level == 'INFO' else 'warning' if activity.level == 'WARNING' else 'danger' }}"></div>
+                        <div class="timeline-content">
+                            <div class="small text-muted">{{ activity.timestamp.strftime('%H:%M') }}</div>
+                            <div class="fw-bold">{{ activity.action }}</div>
+                            <div class="small">{{ activity.user_name or 'System' }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết log -->
+<div class="modal fade" id="logDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết log</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="logDetailsContent">
+                <!-- Nội dung sẽ được load động -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    padding-left: 10px;
+}
+</style>
+
+<script>
+function viewLogDetails(logId) {
+    // TODO: Load log details via AJAX
+    document.getElementById('logDetailsContent').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('logDetailsModal'));
+    modal.show();
+    
+    // Simulate loading
+    setTimeout(() => {
+        document.getElementById('logDetailsContent').innerHTML = `
+            <p>Chi tiết log ID: ${logId}</p>
+            <p>Chức năng này sẽ được phát triển sau để hiển thị đầy đủ thông tin log.</p>
+        `;
+    }, 1000);
+}
+
+function refreshLogs() {
+    location.reload();
+}
+
+function clearOldLogs() {
+    if (confirm('Bạn có muốn xóa các log cũ hơn 30 ngày?')) {
+        // TODO: Implement old logs clearing
+        alert('Đang xóa log cũ...');
+    }
+}
+
+function exportLogs() {
+    if (confirm('Bạn có muốn xuất log hiện tại ra file CSV?')) {
+        // TODO: Implement log export
+        alert('Đang xuất log...');
+    }
+}
+</script>
+{% endblock %}

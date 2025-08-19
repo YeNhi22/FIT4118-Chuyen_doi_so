@@ -1,0 +1,665 @@
+{% extends 'base.html' %}
+
+{% block title %}Tìm kiếm Hợp đồng - Số hóa Hợp đồng{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb" class="mt-3">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/"><i class="fas fa-home me-2"></i>Trang chủ</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-search me-2"></i>Tìm kiếm
+            </li>
+        </ol>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Search Header with Colorful Gradient -->
+    <div class="row mb-5" data-aos="fade-up">
+        <div class="col-12">
+            <div class="search-hero text-center py-5">
+                <div class="hero-background"></div>
+                <div class="hero-content">
+                    <div class="search-icon mb-4">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h1 class="display-4 mb-3 hero-title">
+                        Tìm kiếm hợp đồng
+                    </h1>
+                    <p class="lead text-white mb-4 hero-subtitle">
+                        Tìm kiếm và lọc hợp đồng theo nhiều tiêu chí khác nhau
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Filters with Colorful Design -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="200">
+        <div class="col-12">
+            <div class="search-filters-card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-filter me-2"></i>Bộ lọc tìm kiếm
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form id="searchForm" method="get" action="/find" class="row g-3 align-items-end">
+                        <div class="col-lg-3 col-md-6">
+                            <label for="contractType" class="form-label">
+                                <i class="fas fa-tag me-2"></i>Loại hợp đồng
+                            </label>
+                            <select name="type" id="contractType" class="form-select">
+                                <option value="">-- Tất cả loại --</option>
+                                <option value="mua_ban" {% if type=='mua_ban' %}selected{% endif %}>
+                                    <i class="fas fa-shopping-cart me-2"></i>Mua bán
+                                </option>
+                                <option value="lao_dong" {% if type=='lao_dong' %}selected{% endif %}>
+                                    <i class="fas fa-briefcase me-2"></i>Lao động
+                                </option>
+                                <option value="dich_vu" {% if type=='dich_vu' %}selected{% endif %}>
+                                    <i class="fas fa-cogs me-2"></i>Dịch vụ
+                                </option>
+                                <option value="thue" {% if type=='thue' %}selected{% endif %}>
+                                    <i class="fas fa-key me-2"></i>Thuê
+                                </option>
+                                <option value="hop_tac" {% if type=='hop_tac' %}selected{% endif %}>
+                                    <i class="fas fa-handshake me-2"></i>Hợp tác
+                                </option>
+                                <option value="bao_mat" {% if type=='bao_mat' %}selected{% endif %}>
+                                    <i class="fas fa-shield-alt me-2"></i>Bảo mật (NDA)
+                                </option>
+                                <option value="nguyen_tac" {% if type=='nguyen_tac' %}selected{% endif %}>
+                                    <i class="fas fa-book me-2"></i>Nguyên tắc/Khung
+                                </option>
+                                <option value="khac" {% if type=='khac' %}selected{% endif %}>
+                                    <i class="fas fa-ellipsis-h me-2"></i>Khác
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <label for="keyword" class="form-label">
+                                <i class="fas fa-keyboard me-2"></i>Từ khóa
+                            </label>
+                            <input type="text" name="q" id="keyword" class="form-control" 
+                                   value="{{ q or '' }}" placeholder="Nhập từ khóa tìm kiếm...">
+                        </div>
+                        <div class="col-lg-3 col-md-12">
+                            <button class="btn btn-primary w-100 search-submit-btn" type="submit">
+                                <i class="fas fa-search me-2"></i>Tìm kiếm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results with Colorful Design -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="400">
+        <div class="col-12">
+            <div class="results-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Kết quả tìm kiếm
+                    </h3>
+                    {% if results %}
+                        <span class="results-badge">
+                            <i class="fas fa-file-contract me-1"></i>{{ results|length }} hợp đồng
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if results %}
+                        <form id="chooseForm" method="get" action="/find">
+                            <input type="hidden" name="type" value="{{ type }}">
+                            <input type="hidden" name="q" value="{{ q }}">
+                            <div class="search-results">
+                                {% for r in results %}
+                                    <div class="result-item" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                                        <label class="result-label">
+                                            <div class="result-content">
+                                                <div class="result-radio">
+                                                    <input class="form-check-input" type="radio" name="id" 
+                                                           value="{{ r.id }}" 
+                                                           {% if selected_id and r.id==selected_id %}checked{% endif %}>
+                                                </div>
+                                                <div class="result-info">
+                                                    <div class="result-title">
+                                                        <a href="/find?type={{ type }}&q={{ q }}&id={{ r.id }}" 
+                                                           class="text-decoration-none">
+                                                            <i class="fas fa-file-contract me-2"></i>
+                                                            {{ r.original_filename }}
+                                                        </a>
+                                                    </div>
+                                                    <div class="result-meta">
+                                                        <span class="result-date">
+                                                            <i class="fas fa-calendar me-1"></i>
+                                                            {{ r.created_at.strftime('%d/%m/%Y') if r.created_at else 'N/A' }}
+                                                        </span>
+                                                        {% if r.type_label %}
+                                                            <span class="result-type">
+                                                                <i class="fas fa-tag me-1"></i>
+                                                                {{ r.type_label }}
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="result-actions">
+                                                    <a class="btn btn-sm btn-outline-success me-2" 
+                                                       href="/download/{{ r.id }}/txt" 
+                                                       title="Tải file TXT">
+                                                        <i class="fas fa-file-alt"></i>
+                                                    </a>
+                                                    <a class="btn btn-sm btn-outline-primary me-2" 
+                                                       href="/download/{{ r.id }}/docx" 
+                                                       title="Tải file DOCX">
+                                                        <i class="fas fa-file-word"></i>
+                                                    </a>
+                                                    <a class="btn btn-sm btn-primary me-2" 
+                                                       href="/detail/{{ r.id }}" 
+                                                       title="Xem chi tiết">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            title="Xóa hợp đồng"
+                                                            onclick="confirmDelete({{ r.id }}, '{{ r.original_filename }}')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-secondary btn-lg view-selected-btn" type="submit">
+                                    <i class="fas fa-eye me-2"></i>Xem văn bản đã chọn
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="empty-state text-center py-5">
+                            <div class="empty-icon mb-4">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h5 class="text-muted mb-3">Không có kết quả phù hợp</h5>
+                            <p class="text-muted mb-4">Thử thay đổi từ khóa hoặc bộ lọc để tìm kiếm</p>
+                            <a href="/search" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Tải lên hợp đồng mới
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Section with Colorful Design -->
+    {% if preview_contract %}
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="600">
+        <div class="col-12">
+            <div class="preview-card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-eye me-2"></i>Nội dung văn bản: {{ preview_contract.original_filename }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if preview_text %}
+                        <div class="preview-content">
+                            <pre>{{ preview_text | safe }}</pre>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="/detail/{{ preview_contract.id }}" class="btn btn-primary view-detail-btn">
+                                <i class="fas fa-external-link-alt me-2"></i>Xem chi tiết đầy đủ
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="empty-icon mb-4">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h5 class="text-muted">Không có bản văn bản để hiển thị</h5>
+                            <p class="text-muted">Văn bản có thể chưa được xử lý OCR</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<style>
+/* Search Hero Section with Colorful Gradient */
+.search-hero {
+    position: relative;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+        #667eea 0%,
+        #764ba2 25%,
+        #f093fb 50%,
+        #f5576c 75%,
+        #4facfe 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+.search-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 2.5rem;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.hero-title {
+    background: linear-gradient(45deg, #fff, #f0f0f0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hero-subtitle {
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+/* Search Filters Card */
+.search-filters-card {
+    background: white;
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.search-filters-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2xl);
+}
+
+.search-filters-card .card-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.search-submit-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: var(--radius-lg);
+    padding: 12px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.search-submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.search-submit-btn:hover::before {
+    left: 100%;
+}
+
+.search-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* Results Card */
+.results-card {
+    background: white;
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.results-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2xl);
+}
+
+.results-card .card-header {
+    background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+    color: white;
+    border: none;
+    padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.results-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.search-results {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.result-item {
+    margin-bottom: var(--spacing-md);
+}
+
+.result-label {
+    display: block;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.result-label:hover {
+    transform: translateX(4px);
+}
+
+.result-content {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: var(--secondary-50);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--secondary-200);
+    transition: var(--transition-smooth);
+}
+
+.result-label:hover .result-content {
+    background: var(--primary-50);
+    border-color: var(--primary-200);
+    box-shadow: var(--shadow-md);
+}
+
+.result-radio {
+    margin-right: var(--spacing-lg);
+}
+
+.result-info {
+    flex: 1;
+}
+
+.result-title {
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+}
+
+.result-title a {
+    color: var(--secondary-900);
+    text-decoration: none;
+}
+
+.result-title a:hover {
+    color: var(--primary-600);
+}
+
+.result-meta {
+    display: flex;
+    gap: var(--spacing-lg);
+    font-size: 0.875rem;
+    color: var(--secondary-600);
+}
+
+.result-date,
+.result-type {
+    display: flex;
+    align-items: center;
+}
+
+.result-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.view-selected-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.view-selected-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.view-selected-btn:hover::before {
+    left: 100%;
+}
+
+.view-selected-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* Preview Card */
+.preview-card {
+    background: white;
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-2xl);
+}
+
+.preview-card .card-header {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+    border: none;
+    padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.preview-content {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    border-radius: var(--radius-lg);
+    border: 1px solid #bee5eb;
+    padding: var(--spacing-lg);
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.preview-content pre {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #0c5460;
+    white-space: pre-wrap;
+}
+
+.view-detail-btn {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.view-detail-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.view-detail-btn:hover::before {
+    left: 100%;
+}
+
+.view-detail-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* Empty State */
+.empty-state {
+    padding: var(--spacing-3xl) 0;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-lg);
+    color: white;
+    font-size: 2rem;
+}
+
+/* Animations */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .search-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+
+    .result-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .result-radio {
+        margin-right: 0;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .result-meta {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .result-actions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+(function(){
+    // Auto-submit form when type changes
+    const typeSelect = document.querySelector('#searchForm select[name="type"]');
+    if(typeSelect) {
+        typeSelect.addEventListener('change', function(){
+            document.getElementById('searchForm').requestSubmit();
+        });
+    }
+
+    // Auto-submit form when radio button changes
+    const radioButtons = document.querySelectorAll('#chooseForm input[type="radio"][name="id"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function(){
+            document.getElementById('chooseForm').requestSubmit();
+        });
+    });
+
+    // Enhanced search input with debounce
+    const searchInput = document.querySelector('#keyword');
+    if(searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function(){
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if(this.value.length >= 3 || this.value.length === 0) {
+                    document.getElementById('searchForm').requestSubmit();
+                }
+            }, 500);
+        });
+    }
+})();
+
+// Delete confirmation function
+function confirmDelete(contractId, contractName) {
+    if (confirm(`Bạn có chắc chắn muốn xóa hợp đồng "${contractName}"?\n\nHành động này không thể hoàn tác.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/contracts/${contractId}/delete`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

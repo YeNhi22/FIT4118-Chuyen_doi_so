@@ -1,0 +1,747 @@
+{% extends 'base.html' %}
+
+{% block title %}Chi tiết Hợp đồng #{{ contract.id }} - Số hóa Hợp đồng{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Section - giống trang chủ */
+.detail-hero-container {
+    min-height: 400px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%) !important;
+    border-radius: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 3rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 15s ease infinite !important;
+    box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* Contract text fullscreen styles */
+.contract-text-container.fullscreen-mode {
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.contract-text-container.fullscreen-mode .contract-text-content {
+    padding: 2rem !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+.contract-text-container.fullscreen-mode .contract-text-controls {
+    position: sticky !important;
+    top: 0 !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    z-index: 10 !important;
+    padding: 1rem 2rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    margin: 0 !important;
+}
+
+.detail-hero-content {
+    text-align: center !important;
+    color: white !important;
+    z-index: 10 !important;
+    position: relative !important;
+    max-width: 800px !important;
+    padding: 2rem !important;
+}
+
+.detail-hero-title {
+    font-size: 3.5rem !important;
+    font-weight: 900 !important;
+    color: white !important;
+    margin-bottom: 1rem !important;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+    line-height: 1.1 !important;
+}
+
+.detail-hero-subtitle {
+    font-size: 1.2rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin-bottom: 2rem !important;
+    font-weight: 400 !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+.detail-hero-icon {
+    font-size: 4rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-block !important;
+    padding: 0.75rem 2rem !important;
+    border-radius: 25px !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Floating elements */
+.detail-hero-container::before {
+    content: '' !important;
+    position: absolute !important;
+    width: 200px !important;
+    height: 200px !important;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%) !important;
+    border-radius: 50% !important;
+    top: -100px !important;
+    right: -100px !important;
+    animation: float 6s ease-in-out infinite !important;
+}
+
+.detail-hero-container::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 150px !important;
+    height: 150px !important;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%) !important;
+    border-radius: 50% !important;
+    bottom: -75px !important;
+    left: -75px !important;
+    animation: float 8s ease-in-out infinite reverse !important;
+}
+
+/* Button Hover Effects */
+.btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+}
+
+/* Card Hover Effects */
+.card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15) !important;
+}
+
+/* Clause Item Hover */
+.clause-item:hover {
+    transform: translateX(5px) !important;
+    box-shadow: 0 8px 25px rgba(245, 87, 108, 0.2) !important;
+}
+
+/* Animation for floating elements */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(120deg); }
+    66% { transform: translateY(10px) rotate(240deg); }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .detail-hero-title {
+        font-size: 2.5rem !important;
+    }
+
+    .detail-hero-content {
+        padding: 1.5rem !important;
+    }
+
+    .hero-actions .btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    .card-body {
+        padding: 1.5rem !important;
+    }
+
+    .card-header {
+        padding: 1.5rem !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb" class="mt-3">
+    <div class="container">
+        <ol class="breadcrumb" style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 1rem 1.5rem;">
+            <li class="breadcrumb-item">
+                <a href="/" style="color: #667eea; text-decoration: none; font-weight: 500;"><i class="fas fa-home me-2"></i>Trang chủ</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="/search" style="color: #667eea; text-decoration: none; font-weight: 500;"><i class="fas fa-search me-2"></i>Tìm kiếm</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page" style="color: #1e293b; font-weight: 600;">
+                <i class="fas fa-file-contract me-2"></i>Chi tiết #{{ contract.id }}
+            </li>
+        </ol>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="row mb-5" data-aos="fade-up">
+        <div class="col-12">
+            <div class="detail-hero-container">
+                <div class="detail-hero-content">
+                    <div class="detail-hero-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h1 class="detail-hero-title">
+                        Hợp đồng <span style="color: #f093fb;">#{{ contract.id }}</span>
+                    </h1>
+                    <p class="detail-hero-subtitle">
+                        {{ contract.original_filename or 'Hợp đồng số hóa' }}
+                    </p>
+
+                    <div class="contract-status">
+                        {% if contract.status == 'processed' %}
+                            <span class="status-badge">
+                                <i class="fas fa-check-circle me-2"></i>Đã xử lý thành công
+                            </span>
+                        {% elif contract.status == 'pending' %}
+                            <span class="status-badge">
+                                <i class="fas fa-clock me-2"></i>Đang chờ xử lý
+                            </span>
+                        {% else %}
+                            <span class="status-badge">
+                                <i class="fas fa-info-circle me-2"></i>{{ contract.status }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quick Actions in Hero -->
+                    <div class="hero-actions mt-4">
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            {% if contract.text_path %}
+                            <a href="/download/{{ contract.id }}/txt" class="btn btn-lg"
+                               style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.75rem 2rem; border-radius: 25px; font-weight: 600; backdrop-filter: blur(10px); text-decoration: none;">
+                                <i class="fas fa-file-alt me-2"></i>Tải .txt
+                            </a>
+                            {% endif %}
+                            {% if contract.docx_path %}
+                            <a href="/download/{{ contract.id }}/docx" class="btn btn-lg"
+                               style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.75rem 2rem; border-radius: 25px; font-weight: 600; backdrop-filter: blur(10px); text-decoration: none;">
+                                <i class="fas fa-file-word me-2"></i>Tải .docx
+                            </a>
+                            {% endif %}
+                            {% if contract.original_filename %}
+                            <a href="/download/{{ contract.id }}/original" class="btn btn-lg"
+                               style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.75rem 2rem; border-radius: 25px; font-weight: 600; backdrop-filter: blur(10px); text-decoration: none;">
+                                <i class="fas fa-file me-2"></i>Tệp gốc
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Information Cards -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="200">
+        <!-- Basic Info Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; height: 100%;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-0" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-info-circle me-2" style="color: #667eea;"></i>Thông tin cơ bản
+                    </h4>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    <div class="info-item mb-4">
+                        <label class="form-label" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            <i class="fas fa-file me-2" style="color: #667eea;"></i>Tên file gốc
+                        </label>
+                        <p class="mb-0" style="color: #64748b; font-size: 1.1rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #667eea;">
+                            {{ contract.original_filename or 'Không có tên file' }}
+                        </p>
+                    </div>
+
+                    <div class="info-item mb-4">
+                        <label class="form-label" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            <i class="fas fa-calendar me-2" style="color: #667eea;"></i>Ngày tải lên
+                        </label>
+                        <p class="mb-0" style="color: #64748b; font-size: 1.1rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #667eea;">
+                            {{ contract.created_at.strftime('%d/%m/%Y lúc %H:%M') if contract.created_at else 'Không có' }}
+                        </p>
+                    </div>
+
+                    {% if contract.contract_type %}
+                    <div class="info-item mb-0">
+                        <label class="form-label" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                            <i class="fas fa-tag me-2" style="color: #667eea;"></i>Loại hợp đồng
+                        </label>
+                        <p class="mb-0" style="color: #64748b; font-size: 1.1rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border-left: 4px solid #667eea;">
+                            {{ contract.contract_type.name }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; height: 100%;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.1), rgba(245, 87, 108, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-0" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-bolt me-2" style="color: #f093fb;"></i>Thao tác nhanh
+                    </h4>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    <div class="d-grid gap-3">
+                        {% if contract.text_path %}
+                        <a href="/download/{{ contract.id }}/txt" class="btn btn-lg"
+                           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; padding: 1rem 1.5rem; border-radius: 16px; font-weight: 600; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                            <i class="fas fa-file-alt me-2"></i>Tải xuống file .txt
+                        </a>
+                        {% endif %}
+                        {% if contract.docx_path %}
+                        <a href="/download/{{ contract.id }}/docx" class="btn btn-lg"
+                           style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; color: white; padding: 1rem 1.5rem; border-radius: 16px; font-weight: 600; box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                            <i class="fas fa-file-word me-2"></i>Tải xuống file .docx
+                        </a>
+                        {% endif %}
+                        {% if contract.original_filename %}
+                        <a href="/download/{{ contract.id }}/original" class="btn btn-lg"
+                           style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; color: white; padding: 1rem 1.5rem; border-radius: 16px; font-weight: 600; box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                            <i class="fas fa-file me-2"></i>Tải xuống file gốc
+                        </a>
+                        {% endif %}
+
+                        <button type="button" class="btn btn-lg" onclick="confirmDelete()"
+                                style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); border: none; color: white; padding: 1rem 1.5rem; border-radius: 16px; font-weight: 600; box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3); transition: all 0.3s ease;">
+                            <i class="fas fa-trash me-2"></i>Xóa hợp đồng
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Content Information -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="300">
+        <div class="col-12">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-2" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-file-text me-2" style="color: #4facfe;"></i>Thông tin hợp đồng
+                    </h4>
+                    <p class="text-muted mb-0" style="font-size: 1.1rem;">Chi tiết nội dung và thông tin quan trọng</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="form-label" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-heading me-2" style="color: #4facfe;"></i>Tiêu đề hợp đồng
+                                </label>
+                                <div class="info-value" style="background: #f0f9ff; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #4facfe;">
+                                    <p class="mb-0" style="color: #1e293b; font-size: 1.1rem; font-weight: 500;">
+                                        {{ parsed.title or 'Chưa xác định' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="form-label" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-calendar-check me-2" style="color: #4facfe;"></i>Ngày hiệu lực
+                                </label>
+                                <div class="info-value" style="background: #f0f9ff; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #4facfe;">
+                                    <p class="mb-0" style="color: #1e293b; font-size: 1.1rem; font-weight: 500;">
+                                        {{ parsed.effective_date or 'Chưa xác định' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="form-label" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-money-bill-wave me-2" style="color: #4facfe;"></i>Giá trị hợp đồng
+                                </label>
+                                <div class="info-value" style="background: #f0f9ff; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #4facfe;">
+                                    <p class="mb-0" style="color: #1e293b; font-size: 1.1rem; font-weight: 500;">
+                                        {{ parsed.amount or 'Chưa xác định' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="form-label" style="font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                    <i class="fas fa-tag me-2" style="color: #4facfe;"></i>Loại hợp đồng
+                                </label>
+                                <div class="info-value" style="background: #f0f9ff; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #4facfe;">
+                                    <p class="mb-0" style="color: #1e293b; font-size: 1.1rem; font-weight: 500;">
+                                        {{ contract.contract_type.name if contract.contract_type else (parsed.type_label or parsed.type or 'Chưa phân loại') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Clauses -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="400">
+        <div class="col-12">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(245, 87, 108, 0.1), rgba(255, 107, 107, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-2" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-list-ul me-2" style="color: #f5576c;"></i>Các điều khoản
+                    </h4>
+                    <p class="text-muted mb-0" style="font-size: 1.1rem;">Danh sách các điều khoản chính trong hợp đồng</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    {% if parsed.clauses %}
+                        <div class="row g-3">
+                            {% for clause in parsed.clauses %}
+                            <div class="col-md-6">
+                                <div class="clause-item" style="background: #fef7f7; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #f5576c; transition: all 0.3s ease;">
+                                    <i class="fas fa-check-circle me-2" style="color: #f5576c;"></i>
+                                    <span style="color: #1e293b; font-weight: 500;">{{ clause }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-info-circle" style="font-size: 3rem; color: #e2e8f0; margin-bottom: 1rem;"></i>
+                            <p class="text-muted mb-0" style="font-size: 1.1rem;">Chưa có thông tin về các điều khoản</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Text Content -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="450">
+        <div class="col-12">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-2" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-file-text me-2" style="color: #6366f1;"></i>Nội dung hợp đồng
+                    </h4>
+                    <p class="text-muted mb-0" style="font-size: 1.1rem;">Toàn bộ nội dung văn bản của hợp đồng</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    {% if contract_text %}
+                        <div class="contract-text-container" style="background: #f8fafc; border-radius: 16px; padding: 2rem; border: 1px solid #e2e8f0; max-height: 600px; overflow-y: auto;">
+                            <div class="contract-text-controls mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-controls">
+                                        <button type="button" class="btn btn-sm me-2" onclick="adjustTextSize('decrease')"
+                                                style="background: #e2e8f0; border: none; color: #64748b; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
+                                            <i class="fas fa-minus"></i> Nhỏ hơn
+                                        </button>
+                                        <button type="button" class="btn btn-sm me-2" onclick="adjustTextSize('increase')"
+                                                style="background: #e2e8f0; border: none; color: #64748b; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
+                                            <i class="fas fa-plus"></i> Lớn hơn
+                                        </button>
+                                        <button type="button" class="btn btn-sm" onclick="toggleFullscreen()"
+                                                style="background: #6366f1; border: none; color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
+                                            <i class="fas fa-expand"></i> Toàn màn hình
+                                        </button>
+                                    </div>
+                                    <div class="text-info">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            {{ contract_text|length }} ký tự
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="contractTextContent" class="contract-text-content"
+                                 style="font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; color: #1e293b; white-space: pre-wrap; word-wrap: break-word;">{{ contract_text }}</div>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-text" style="font-size: 4rem; color: #e2e8f0; margin-bottom: 1rem;"></i>
+                            <h5 style="color: #64748b; margin-bottom: 1rem;">Không có nội dung văn bản</h5>
+                            <p class="text-muted mb-0" style="font-size: 1.1rem;">
+                                Nội dung văn bản của hợp đồng chưa được trích xuất hoặc không khả dụng.
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signatures and Parties Information -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="500">
+        <!-- Signatures Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; height: 100%;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-2" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-signature me-2" style="color: #8b5cf6;"></i>Chữ ký
+                    </h4>
+                    <p class="text-muted mb-0" style="font-size: 1.1rem;">Thông tin nhận diện chữ ký</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    {% set sigs = parsed.signatures or {} %}
+                    {% set has_real_sig = (sigs.get('ben_a_present') or sigs.get('ben_b_present')) %}
+
+                    {% if has_real_sig %}
+                        <div class="signature-status">
+                            {% if sigs.get('ben_a_present') %}
+                            <div class="signature-item mb-3" style="background: #f0fdf4; padding: 1rem; border-radius: 12px; border-left: 4px solid #22c55e;">
+                                <i class="fas fa-check-circle me-2" style="color: #22c55e;"></i>
+                                <span style="color: #1e293b; font-weight: 500;">Bên A đã ký</span>
+                            </div>
+                            {% endif %}
+                            {% if sigs.get('ben_b_present') %}
+                            <div class="signature-item mb-3" style="background: #f0fdf4; padding: 1rem; border-radius: 12px; border-left: 4px solid #22c55e;">
+                                <i class="fas fa-check-circle me-2" style="color: #22c55e;"></i>
+                                <span style="color: #1e293b; font-weight: 500;">Bên B đã ký</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-signature" style="font-size: 3rem; color: #e2e8f0; margin-bottom: 1rem;"></i>
+                            <p class="text-muted mb-0" style="font-size: 1.1rem;">Chưa phát hiện chữ ký</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Parties Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; height: 100%;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-2" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-users me-2" style="color: #22c55e;"></i>Các bên tham gia
+                    </h4>
+                    <p class="text-muted mb-0" style="font-size: 1.1rem;">Thông tin các bên trong hợp đồng</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    {% if parties %}
+                        {% if parties.get('ben_a') %}
+                        <div class="party-item mb-3" style="background: #f0fdf4; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #22c55e;">
+                            <h6 style="color: #22c55e; font-weight: 600; margin-bottom: 0.5rem;">
+                                <i class="fas fa-building me-2"></i>Bên A
+                            </h6>
+                            <p class="mb-0" style="color: #1e293b; font-weight: 500;">{{ parties.ben_a }}</p>
+                        </div>
+                        {% endif %}
+                        {% if parties.get('ben_b') %}
+                        <div class="party-item mb-0" style="background: #f0fdf4; padding: 1.5rem; border-radius: 16px; border-left: 4px solid #22c55e;">
+                            <h6 style="color: #22c55e; font-weight: 600; margin-bottom: 0.5rem;">
+                                <i class="fas fa-building me-2"></i>Bên B
+                            </h6>
+                            <p class="mb-0" style="color: #1e293b; font-weight: 500;">{{ parties.ben_b }}</p>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-users" style="font-size: 3rem; color: #e2e8f0; margin-bottom: 1rem;"></i>
+                            <p class="text-muted mb-0" style="font-size: 1.1rem;">Chưa có thông tin các bên</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-5" data-aos="fade-up" data-aos-delay="600">
+        <div class="col-12">
+            <div class="card" style="border-radius: 24px; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(156, 163, 175, 0.1), rgba(107, 114, 128, 0.1)); border: none; padding: 2rem;">
+                    <h4 class="mb-2" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-cogs me-2" style="color: #6b7280;"></i>Thao tác
+                    </h4>
+                    <p class="text-muted mb-0" style="font-size: 1.1rem;">Các thao tác có thể thực hiện với hợp đồng này</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="/search" class="btn btn-lg w-100"
+                               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; color: white; padding: 1.5rem; border-radius: 20px; font-weight: 600; box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                <i class="fas fa-search me-2" style="font-size: 1.5rem;"></i><br>
+                                <span style="font-size: 1.1rem;">Quay lại tìm kiếm</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="/upload" class="btn btn-lg w-100"
+                               style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none; color: white; padding: 1.5rem; border-radius: 20px; font-weight: 600; box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                <i class="fas fa-upload me-2" style="font-size: 1.5rem;"></i><br>
+                                <span style="font-size: 1.1rem;">Tải lên hợp đồng mới</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-lg w-100" onclick="confirmDelete()"
+                                    style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; color: white; padding: 1.5rem; border-radius: 20px; font-weight: 600; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3); transition: all 0.3s ease;">
+                                <i class="fas fa-trash me-2" style="font-size: 1.5rem;"></i><br>
+                                <span style="font-size: 1.1rem;">Xóa hợp đồng</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.15);">
+                <div class="modal-header" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1)); border: none; padding: 2rem; border-radius: 20px 20px 0 0;">
+                    <h5 class="modal-title" style="color: #1e293b; font-weight: 700;">
+                        <i class="fas fa-exclamation-triangle me-2" style="color: #ef4444;"></i>Xác nhận xóa hợp đồng
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" style="font-size: 1.2rem;"></button>
+                </div>
+                <div class="modal-body" style="padding: 2rem;">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-trash-alt" style="font-size: 4rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                    </div>
+                    <p style="font-size: 1.2rem; color: #1e293b; text-align: center; margin-bottom: 1rem;">
+                        Bạn có chắc chắn muốn xóa hợp đồng <strong style="color: #ef4444;">#{{ contract.id }}</strong>?
+                    </p>
+                    <p style="color: #64748b; text-align: center; margin-bottom: 0;">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        Hành động này không thể hoàn tác và sẽ xóa tất cả dữ liệu liên quan.
+                    </p>
+                </div>
+                <div class="modal-footer" style="border: none; padding: 0 2rem 2rem 2rem; justify-content: center;">
+                    <button type="button" class="btn btn-lg me-3" data-bs-dismiss="modal"
+                            style="background: #f1f5f9; color: #64748b; border: none; padding: 1rem 2rem; border-radius: 16px; font-weight: 600;">
+                        <i class="fas fa-times me-2"></i>Hủy bỏ
+                    </button>
+                    <form method="post" action="/detail/{{ contract.id }}/delete" class="d-inline">
+                        <button type="submit" class="btn btn-lg"
+                                style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; color: white; padding: 1rem 2rem; border-radius: 16px; font-weight: 600; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);">
+                            <i class="fas fa-trash me-2"></i>Xóa hợp đồng
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete() {
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    deleteModal.show();
+}
+
+// Contract text controls
+let currentFontSize = 14;
+
+function adjustTextSize(action) {
+    const textContent = document.getElementById('contractTextContent');
+    if (!textContent) return;
+
+    if (action === 'increase' && currentFontSize < 24) {
+        currentFontSize += 2;
+    } else if (action === 'decrease' && currentFontSize > 10) {
+        currentFontSize -= 2;
+    }
+
+    textContent.style.fontSize = currentFontSize + 'px';
+}
+
+function toggleFullscreen() {
+    const container = document.querySelector('.contract-text-container');
+    const button = event.target.closest('button');
+
+    if (!container) return;
+
+    if (!container.classList.contains('fullscreen-mode')) {
+        // Enter fullscreen
+        container.classList.add('fullscreen-mode');
+        container.style.position = 'fixed';
+        container.style.top = '0';
+        container.style.left = '0';
+        container.style.width = '100vw';
+        container.style.height = '100vh';
+        container.style.zIndex = '9999';
+        container.style.maxHeight = 'none';
+        container.style.borderRadius = '0';
+        container.style.margin = '0';
+
+        button.innerHTML = '<i class="fas fa-compress"></i> Thu nhỏ';
+
+        // Add escape key listener
+        document.addEventListener('keydown', handleEscapeKey);
+    } else {
+        // Exit fullscreen
+        exitFullscreen();
+    }
+}
+
+function exitFullscreen() {
+    const container = document.querySelector('.contract-text-container');
+    const button = document.querySelector('button[onclick="toggleFullscreen()"]');
+
+    if (!container) return;
+
+    container.classList.remove('fullscreen-mode');
+    container.style.position = '';
+    container.style.top = '';
+    container.style.left = '';
+    container.style.width = '';
+    container.style.height = '';
+    container.style.zIndex = '';
+    container.style.maxHeight = '600px';
+    container.style.borderRadius = '16px';
+    container.style.margin = '';
+
+    if (button) {
+        button.innerHTML = '<i class="fas fa-expand"></i> Toàn màn hình';
+    }
+
+    document.removeEventListener('keydown', handleEscapeKey);
+}
+
+function handleEscapeKey(event) {
+    if (event.key === 'Escape') {
+        exitFullscreen();
+    }
+}
+
+// Add hover effects to buttons
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

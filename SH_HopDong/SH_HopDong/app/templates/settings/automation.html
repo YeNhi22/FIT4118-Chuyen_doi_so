@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Tự động hóa</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Quy tắc tự động phân loại</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addRuleModal">
+                    <i class="bi bi-plus-circle"></i> Thêm quy tắc
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Quy tắc</th>
+                                <th>Điều kiện</th>
+                                <th>Hành động</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rule in auto_rules %}
+                            <tr>
+                                <td>
+                                    <strong>{{ rule.name }}</strong>
+                                    <div class="small text-muted">{{ rule.description }}</div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        {% for condition in rule.conditions %}
+                                        <div class="mb-1">
+                                            <span class="badge bg-light text-dark">{{ condition.field }}</span>
+                                            <span class="badge bg-info">{{ condition.operator }}</span>
+                                            <span class="badge bg-secondary">{{ condition.value }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        {% for action in rule.actions %}
+                                        <div class="mb-1">
+                                            <span class="badge bg-success">{{ action.type }}</span>
+                                            <span class="badge bg-light text-dark">{{ action.value }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if rule.is_active else 'danger' }}">
+                                        {{ 'Hoạt động' if rule.is_active else 'Tạm dừng' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-primary" onclick="editRule({{ rule.id }})">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-outline-{{ 'warning' if rule.is_active else 'success' }}" 
+                                                onclick="toggleRule({{ rule.id }})">
+                                            <i class="bi bi-{{ 'pause' if rule.is_active else 'play' }}"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="deleteRule({{ rule.id }})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Quy tắc gắn thẻ tự động</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoTagExpiring" 
+                                   {% if auto_tag_config.expiring_contracts %}checked{% endif %}>
+                            <label class="form-check-label" for="autoTagExpiring">
+                                Tự động gắn thẻ "Sắp hết hạn" cho hợp đồng còn 30 ngày
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoTagHighValue" 
+                                   {% if auto_tag_config.high_value_contracts %}checked{% endif %}>
+                            <label class="form-check-label" for="autoTagHighValue">
+                                Tự động gắn thẻ "Giá trị cao" cho hợp đồng > 1 tỷ
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoTagConfidential" 
+                                   {% if auto_tag_config.confidential_contracts %}checked{% endif %}>
+                            <label class="form-check-label" for="autoTagConfidential">
+                                Tự động gắn thẻ "Bảo mật" cho hợp đồng có từ khóa nhạy cảm
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoTagRenewal" 
+                                   {% if auto_tag_config.renewal_contracts %}checked{% endif %}>
+                            <label class="form-check-label" for="autoTagRenewal">
+                                Tự động gắn thẻ "Gia hạn" cho hợp đồng sắp hết hạn
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3" onclick="saveAutoTagConfig()">Lưu cài đặt</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Thống kê tự động hóa</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Hôm nay</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Quy tắc đã chạy:</span>
+                        <strong>{{ automation_stats.today_rules_executed }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Hợp đồng được xử lý:</span>
+                        <strong class="text-success">{{ automation_stats.today_contracts_processed }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Thẻ được gắn:</span>
+                        <strong class="text-info">{{ automation_stats.today_tags_applied }}</strong>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Tháng này</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Tổng quy tắc:</span>
+                        <strong>{{ automation_stats.month_total_rules }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Hiệu suất:</span>
+                        <strong class="text-success">{{ "%.1f"|format(automation_stats.month_efficiency) }}%</strong>
+                    </div>
+                </div>
+                
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="runAutomationNow()">
+                    <i class="bi bi-play-circle"></i> Chạy tự động ngay
+                </button>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Lịch trình tự động</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Phân loại hợp đồng:</strong> Mỗi giờ
+                </div>
+                <div class="mb-2">
+                    <strong>Gắn thẻ tự động:</strong> Mỗi 30 phút
+                </div>
+                <div class="mb-2">
+                    <strong>Kiểm tra hết hạn:</strong> Mỗi ngày lúc 9:00
+                </div>
+                <div class="mb-2">
+                    <strong>Báo cáo rủi ro:</strong> Mỗi tuần
+                </div>
+                <div class="mb-2">
+                    <strong>Sao lưu dữ liệu:</strong> Mỗi ngày lúc 2:00
+                </div>
+                
+                <button class="btn btn-outline-secondary btn-sm w-100 mt-2" onclick="editSchedule()">
+                    <i class="bi bi-clock"></i> Chỉnh sửa lịch trình
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal thêm quy tắc -->
+<div class="modal fade" id="addRuleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm quy tắc tự động</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="/settings/automation/rules">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tên quy tắc *</label>
+                            <input type="text" name="rule_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mô tả</label>
+                            <input type="text" name="rule_description" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Điều kiện</label>
+                            <div id="conditionsContainer">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-4">
+                                        <select name="condition_field[]" class="form-select">
+                                            <option value="contract_type">Loại hợp đồng</option>
+                                            <option value="partner_name">Tên đối tác</option>
+                                            <option value="contract_value">Giá trị hợp đồng</option>
+                                            <option value="expiration_date">Ngày hết hạn</option>
+                                            <option value="status">Trạng thái</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select name="condition_operator[]" class="form-select">
+                                            <option value="equals">Bằng</option>
+                                            <option value="contains">Chứa</option>
+                                            <option value="greater_than">Lớn hơn</option>
+                                            <option value="less_than">Nhỏ hơn</option>
+                                            <option value="starts_with">Bắt đầu bằng</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" name="condition_value[]" class="form-control" placeholder="Giá trị">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCondition(this)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addCondition()">
+                                <i class="bi bi-plus-circle"></i> Thêm điều kiện
+                            </button>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Hành động</label>
+                            <div id="actionsContainer">
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-4">
+                                        <select name="action_type[]" class="form-select">
+                                            <option value="set_contract_type">Đặt loại hợp đồng</option>
+                                            <option value="add_tag">Thêm thẻ</option>
+                                            <option value="set_status">Đặt trạng thái</option>
+                                            <option value="assign_department">Gán phòng ban</option>
+                                            <option value="send_notification">Gửi thông báo</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" name="action_value[]" class="form-control" placeholder="Giá trị hành động">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeAction(this)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addAction()">
+                                <i class="bi bi-plus-circle"></i> Thêm hành động
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ưu tiên</label>
+                            <select name="priority" class="form-select">
+                                <option value="low">Thấp</option>
+                                <option value="medium" selected>Cao</option>
+                                <option value="high">Cao</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="ruleActive" checked>
+                                <label class="form-check-label" for="ruleActive">
+                                    Kích hoạt quy tắc ngay
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu quy tắc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let conditionCount = 1;
+let actionCount = 1;
+
+function addCondition() {
+    const container = document.getElementById('conditionsContainer');
+    const newCondition = document.createElement('div');
+    newCondition.className = 'row g-2 mb-2';
+    newCondition.innerHTML = `
+        <div class="col-md-4">
+            <select name="condition_field[]" class="form-select">
+                <option value="contract_type">Loại hợp đồng</option>
+                <option value="partner_name">Tên đối tác</option>
+                <option value="contract_value">Giá trị hợp đồng</option>
+                <option value="expiration_date">Ngày hết hạn</option>
+                <option value="status">Trạng thái</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="condition_operator[]" class="form-select">
+                <option value="equals">Bằng</option>
+                <option value="contains">Chứa</option>
+                <option value="greater_than">Lớn hơn</option>
+                <option value="less_than">Nhỏ hơn</option>
+                <option value="starts_with">Bắt đầu bằng</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="condition_value[]" class="form-control" placeholder="Giá trị">
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeCondition(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(newCondition);
+    conditionCount++;
+}
+
+function removeCondition(button) {
+    if (conditionCount > 1) {
+        button.closest('.row').remove();
+        conditionCount--;
+    }
+}
+
+function addAction() {
+    const container = document.getElementById('actionsContainer');
+    const newAction = document.createElement('div');
+    newAction.className = 'row g-2 mb-2';
+    newAction.innerHTML = `
+        <div class="col-md-4">
+            <select name="action_type[]" class="form-select">
+                <option value="set_contract_type">Đặt loại hợp đồng</option>
+                <option value="add_tag">Thêm thẻ</option>
+                <option value="set_status">Đặt trạng thái</option>
+                <option value="assign_department">Gán phòng ban</option>
+                <option value="send_notification">Gửi thông báo</option>
+            </select>
+        </div>
+        <div class="col-md-7">
+            <input type="text" name="action_value[]" class="form-control" placeholder="Giá trị hành động">
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeAction(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(newAction);
+    actionCount++;
+}
+
+function removeAction(button) {
+    if (actionCount > 1) {
+        button.closest('.row').remove();
+        actionCount--;
+    }
+}
+
+function editRule(ruleId) {
+    // TODO: Implement rule editing
+    alert(`Chỉnh sửa quy tắc ID: ${ruleId}`);
+}
+
+function toggleRule(ruleId) {
+    if (confirm('Bạn có muốn thay đổi trạng thái quy tắc này?')) {
+        // TODO: Implement rule toggle
+        alert(`Thay đổi trạng thái quy tắc ID: ${ruleId}`);
+    }
+}
+
+function deleteRule(ruleId) {
+    if (confirm('Bạn có chắc chắn muốn xóa quy tắc này?')) {
+        // TODO: Implement rule deletion
+        alert(`Xóa quy tắc ID: ${ruleId}`);
+    }
+}
+
+function saveAutoTagConfig() {
+    // TODO: Implement auto tag config saving
+    alert('Đã lưu cài đặt gắn thẻ tự động');
+}
+
+function runAutomationNow() {
+    if (confirm('Bạn có muốn chạy tự động hóa ngay bây giờ?')) {
+        // TODO: Implement immediate automation run
+        alert('Đang chạy tự động hóa...');
+    }
+}
+
+function editSchedule() {
+    // TODO: Implement schedule editing
+    alert('Chức năng chỉnh sửa lịch trình sẽ được phát triển sau');
+}
+</script>
+{% endblock %}

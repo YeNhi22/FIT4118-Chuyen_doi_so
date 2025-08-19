@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Thống kê hợp đồng</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Theo loại hợp đồng</h5>
+                <div class="chart-container" style="position: relative; height:300px;">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Theo trạng thái</h5>
+                <div class="chart-container" style="position: relative; height:300px;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Theo phòng ban</h5>
+                <div class="chart-container" style="position: relative; height:300px;">
+                    <canvas id="departmentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Chi tiết thống kê</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Loại</th>
+                                <th>Số lượng</th>
+                                <th>Tỷ lệ</th>
+                                <th>Giá trị trung bình</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in contract_stats %}
+                            <tr>
+                                <td>{{ stat.type }}</td>
+                                <td>{{ stat.count }}</td>
+                                <td>{{ "%.1f"|format(stat.percentage) }}%</td>
+                                <td>{{ stat.avg_value or 'N/A' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Biểu đồ loại hợp đồng
+const typeCtx = document.getElementById('typeChart').getContext('2d');
+new Chart(typeCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ type_labels | tojson }},
+        datasets: [{
+            data: {{ type_data | tojson }},
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// Biểu đồ trạng thái
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+    type: 'pie',
+    data: {
+        labels: {{ status_labels | tojson }},
+        datasets: [{
+            data: {{ status_data | tojson }},
+            backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#6c757d']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// Biểu đồ phòng ban
+const deptCtx = document.getElementById('departmentChart').getContext('2d');
+new Chart(deptCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ dept_labels | tojson }},
+        datasets: [{
+            label: 'Số hợp đồng',
+            data: {{ dept_data | tojson }},
+            backgroundColor: '#17a2b8'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

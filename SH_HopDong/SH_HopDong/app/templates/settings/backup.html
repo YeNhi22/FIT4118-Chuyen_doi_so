@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Sao lưu dữ liệu</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Cài đặt sao lưu tự động</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/settings/backup">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Tần suất sao lưu *</label>
+                            <select name="backup_frequency" class="form-select" required>
+                                <option value="daily" {% if backup_config.frequency == 'daily' %}selected{% endif %}>Mỗi ngày</option>
+                                <option value="weekly" {% if backup_config.frequency == 'weekly' %}selected{% endif %}>Mỗi tuần</option>
+                                <option value="monthly" {% if backup_config.frequency == 'monthly' %}selected{% endif %}>Mỗi tháng</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Thời gian sao lưu *</label>
+                            <input type="time" name="backup_time" class="form-control" 
+                                   value="{{ backup_config.time or '02:00' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giữ lại bản sao lưu</label>
+                            <select name="retention_period" class="form-select">
+                                <option value="7" {% if backup_config.retention_days == 7 %}selected{% endif %}>7 ngày</option>
+                                <option value="30" {% if backup_config.retention_days == 30 %}selected{% endif %}>30 ngày</option>
+                                <option value="90" {% if backup_config.retention_days == 90 %}selected{% endif %}>90 ngày</option>
+                                <option value="365" {% if backup_config.retention_days == 365 %}selected{% endif %}>1 năm</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Nén dữ liệu</label>
+                            <select name="compression_type" class="form-select">
+                                <option value="none" {% if backup_config.compression == 'none' %}selected{% endif %}>Không nén</option>
+                                <option value="gzip" {% if backup_config.compression == 'gzip' %}selected{% endif %}>GZIP (Nhanh)</option>
+                                <option value="zip" {% if backup_config.compression == 'zip' %}selected{% endif %}>ZIP (Cân bằng)</option>
+                                <option value="7z" {% if backup_config.compression == '7z' %}selected{% endif %}>7Z (Nén cao)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Dữ liệu cần sao lưu</label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="backup_data" value="contracts" id="backup_contracts" 
+                                               {% if 'contracts' in backup_config.data_types %}checked{% endif %}>
+                                        <label class="form-check-label" for="backup_contracts">
+                                            Hợp đồng và tài liệu
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="backup_data" value="database" id="backup_database" 
+                                               {% if 'database' in backup_config.data_types %}checked{% endif %}>
+                                        <label class="form-check-label" for="backup_database">
+                                            Cơ sở dữ liệu
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="backup_data" value="settings" id="backup_settings" 
+                                               {% if 'settings' in backup_config.data_types %}checked{% endif %}>
+                                        <label class="form-check-label" for="backup_settings">
+                                            Cài đặt hệ thống
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="backup_data" value="users" id="backup_users" 
+                                               {% if 'users' in backup_config.data_types %}checked{% endif %}>
+                                        <label class="form-check-label" for="backup_users">
+                                            Người dùng và phân quyền
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="backup_data" value="logs" id="backup_logs" 
+                                               {% if 'logs' in backup_config.data_types %}checked{% endif %}>
+                                        <label class="form-check-label" for="backup_logs">
+                                            Nhật ký hệ thống
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="backup_data" value="reports" id="backup_reports" 
+                                               {% if 'reports' in backup_config.data_types %}checked{% endif %}>
+                                        <label class="form-check-label" for="backup_reports">
+                                            Báo cáo và thống kê
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Thông báo qua email</label>
+                            <input type="email" name="notification_email" class="form-control" 
+                                   value="{{ backup_config.notification_email or '' }}" placeholder="admin@company.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kích hoạt sao lưu tự động</label>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" name="enable_auto_backup" id="enableAutoBackup" 
+                                       {% if backup_config.enable_auto_backup %}checked{% endif %}>
+                                <label class="form-check-label" for="enableAutoBackup">
+                                    Bật sao lưu tự động
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetToDefault()">Khôi phục mặc định</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Lịch sử sao lưu</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Loại</th>
+                                <th>Kích thước</th>
+                                <th>Trạng thái</th>
+                                <th>Thời gian thực hiện</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for backup in backup_history %}
+                            <tr>
+                                <td>{{ backup.timestamp.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'primary' if backup.type == 'auto' else 'success' }}">
+                                        {{ 'Tự động' if backup.type == 'auto' else 'Thủ công' }}
+                                    </span>
+                                </td>
+                                <td>{{ backup.size_mb }} MB</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if backup.status == 'success' else 'danger' }}">
+                                        {{ 'Thành công' if backup.status == 'success' else 'Thất bại' }}
+                                    </span>
+                                </td>
+                                <td>{{ backup.duration_seconds }}s</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button class="btn btn-outline-primary" onclick="downloadBackup('{{ backup.filename }}')">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="restoreBackup('{{ backup.filename }}')">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="deleteBackup('{{ backup.filename }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Thống kê sao lưu</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Hôm nay</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Đã sao lưu:</span>
+                        <strong>{{ backup_stats.today_backups }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Thành công:</span>
+                        <strong class="text-success">{{ backup_stats.today_success }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Thất bại:</span>
+                        <strong class="text-danger">{{ backup_stats.today_failed }}</strong>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Tháng này</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Tổng cộng:</span>
+                        <strong>{{ backup_stats.month_total }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Dung lượng:</span>
+                        <strong class="text-info">{{ backup_stats.month_total_size_gb }} GB</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Tỷ lệ thành công:</span>
+                        <strong class="text-success">{{ "%.1f"|format(backup_stats.month_success_rate) }}%</strong>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Dung lượng ổ cứng</h6>
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" style="width: {{ backup_stats.disk_usage_percent }}%">
+                            {{ backup_stats.disk_usage_percent }}%
+                        </div>
+                    </div>
+                    <div class="small text-muted">
+                        {{ backup_stats.disk_used_gb }} GB / {{ backup_stats.disk_total_gb }} GB
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary btn-sm w-100" onclick="createBackupNow()">
+                    <i class="bi bi-cloud-upload"></i> Tạo sao lưu ngay
+                </button>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Thông tin sao lưu</h5>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <div class="mb-2">
+                        <strong>Lần sao lưu cuối:</strong><br>
+                        {{ backup_info.last_backup_time or 'Chưa có' }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Lần sao lưu tiếp theo:</strong><br>
+                        {{ backup_info.next_backup_time or 'Chưa lên lịch' }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Vị trí lưu trữ:</strong><br>
+                        {{ backup_info.storage_path or 'Chưa cấu hình' }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Dung lượng trống:</strong><br>
+                        {{ backup_info.free_space_gb or 0 }} GB
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetToDefault() {
+    if (confirm('Bạn có muốn khôi phục cài đặt sao lưu về mặc định?')) {
+        // TODO: Implement reset to default
+        alert('Đã khôi phục cài đặt mặc định');
+        location.reload();
+    }
+}
+
+function createBackupNow() {
+    if (confirm('Bạn có muốn tạo sao lưu ngay bây giờ?')) {
+        // TODO: Implement immediate backup creation
+        alert('Đang tạo sao lưu...');
+    }
+}
+
+function downloadBackup(filename) {
+    // TODO: Implement backup download
+    alert(`Tải xuống sao lưu: ${filename}`);
+}
+
+function restoreBackup(filename) {
+    if (confirm(`Bạn có chắc chắn muốn khôi phục từ sao lưu: ${filename}?`)) {
+        // TODO: Implement backup restoration
+        alert(`Đang khôi phục từ sao lưu: ${filename}`);
+    }
+}
+
+function deleteBackup(filename) {
+    if (confirm(`Bạn có chắc chắn muốn xóa sao lưu: ${filename}?`)) {
+        // TODO: Implement backup deletion
+        alert(`Đã xóa sao lưu: ${filename}`);
+    }
+}
+</script>
+{% endblock %}

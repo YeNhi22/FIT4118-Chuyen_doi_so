@@ -1,0 +1,882 @@
+{% extends "base.html" %}
+
+{% block title %}Tải lên Hợp đồng - Số hóa Hợp đồng{% endblock %}
+
+{% block breadcrumb %}
+<nav aria-label="breadcrumb" class="mt-3">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/"><i class="fas fa-home me-2"></i>Trang chủ</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-upload me-2"></i>Tải lên
+            </li>
+        </ol>
+    </div>
+</nav>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Section */
+.upload-hero-container {
+    min-height: 500px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%) !important;
+    border-radius: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 3rem !important;
+    position: relative !important;
+    overflow: hidden !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 15s ease infinite !important;
+}
+
+.upload-hero-content {
+    text-align: center !important;
+    color: white !important;
+    z-index: 10 !important;
+    position: relative !important;
+}
+
+.upload-hero-badge {
+    display: inline-block !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50px !important;
+    padding: 0.5rem 1.5rem !important;
+    margin-bottom: 2rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+}
+
+.upload-hero-icon-container {
+    margin-bottom: 2rem !important;
+}
+
+.upload-hero-icon {
+    width: 120px !important;
+    height: 120px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    font-size: 3rem !important;
+    color: white !important;
+    animation: float 3s ease-in-out infinite !important;
+}
+
+.upload-hero-title {
+    font-size: 3.5rem !important;
+    font-weight: 800 !important;
+    color: white !important;
+    margin-bottom: 1.5rem !important;
+    line-height: 1.2 !important;
+}
+
+.upload-hero-subtitle {
+    font-size: 1.2rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    margin-bottom: 2rem !important;
+    max-width: 600px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.upload-hero-features {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 2rem !important;
+    flex-wrap: wrap !important;
+}
+
+.upload-feature-item {
+    text-align: center !important;
+    padding: 1rem 1.5rem !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 15px !important;
+    min-width: 140px !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.upload-feature-icon {
+    font-size: 1.5rem !important;
+    color: white !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.upload-feature-text {
+    font-size: 0.9rem !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500 !important;
+}
+
+/* Animations */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Upload Form Enhancements */
+.upload-form-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.upload-form-card .card-header {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    color: white !important;
+    border-radius: 24px 24px 0 0 !important;
+    padding: 1.5rem 2rem !important;
+    border: none !important;
+}
+
+/* Contract Type Selection */
+.contract-type-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+.contract-type-card {
+    background: white !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+}
+
+.contract-type-card:hover {
+    border-color: #667eea !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15) !important;
+}
+
+.contract-type-card.selected {
+    border-color: #667eea !important;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2) !important;
+}
+
+.contract-type-card.selected::after {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+    width: 24px !important;
+    height: 24px !important;
+    background: #667eea !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.8rem !important;
+    font-weight: bold !important;
+}
+
+.contract-type-icon {
+    width: 50px !important;
+    height: 50px !important;
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 1rem !important;
+    color: white !important;
+    font-size: 1.25rem !important;
+}
+
+.contract-type-name {
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.contract-type-desc {
+    font-size: 0.85rem !important;
+    color: #64748b !important;
+    line-height: 1.4 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .upload-hero-title {
+        font-size: 2.5rem !important;
+    }
+
+    .upload-hero-subtitle {
+        font-size: 1rem !important;
+    }
+
+    .upload-hero-icon {
+        width: 80px !important;
+        height: 80px !important;
+        font-size: 2rem !important;
+    }
+
+    .upload-hero-features {
+        gap: 1rem !important;
+    }
+
+    .contract-type-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+        gap: 0.75rem !important;
+    }
+
+    .contract-type-card {
+        padding: 1rem !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Ultra Modern Hero Section -->
+    <div class="row mb-5" data-aos="fade-up">
+        <div class="col-12">
+            <div class="upload-hero-container">
+                <div class="upload-hero-content">
+                    <div class="upload-hero-badge">
+                        <span>🚀 AI-Powered Upload System</span>
+                    </div>
+                    <div class="upload-hero-icon-container">
+                        <div class="upload-hero-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                    </div>
+                    <h1 class="upload-hero-title">
+                        Tải lên<br>
+                        <span class="gradient-text">Hợp đồng</span>
+                    </h1>
+                    <p class="upload-hero-subtitle">
+                        Tải lên file PDF, ảnh để xử lý OCR và số hóa hợp đồng với công nghệ AI tiên tiến
+                    </p>
+                    <div class="upload-hero-features">
+                        <div class="upload-feature-item">
+                            <div class="upload-feature-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="upload-feature-text">PDF Support</div>
+                        </div>
+                        <div class="upload-feature-item">
+                            <div class="upload-feature-icon">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="upload-feature-text">Image OCR</div>
+                        </div>
+                        <div class="upload-feature-item">
+                            <div class="upload-feature-icon">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div class="upload-feature-text">Auto Classify</div>
+                        </div>
+                        <div class="upload-feature-item">
+                            <div class="upload-feature-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="upload-feature-text">Fast Process</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Form Section -->
+    <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="200">
+        <div class="col-lg-8 col-md-10">
+            <div class="card upload-form-card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-upload me-2"></i>Form tải lên
+                    </h3>
+                    <p class="mb-0 mt-2" style="color: rgba(255,255,255,0.9);">
+                        Chọn file hợp đồng để bắt đầu quá trình số hóa
+                    </p>
+                </div>
+                <div class="card-body">
+                    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <!-- Contract Type Selection -->
+                        <div class="mb-5">
+                            <h5 class="mb-3">
+                                <i class="fas fa-tags me-2"></i>Chọn loại hợp đồng
+                            </h5>
+                            <p class="text-muted mb-4">Chọn loại hợp đồng để hệ thống có thể phân loại và xử lý tốt hơn</p>
+
+                            <div class="contract-type-grid" id="contractTypeGrid">
+                                <!-- Contract types will be loaded here -->
+                            </div>
+                            <input type="hidden" name="contract_type_id" id="selectedContractType">
+
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-lightbulb me-1"></i>
+                                    Bạn cũng có thể để trống để hệ thống tự động nhận diện loại hợp đồng
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="mb-4">
+                            <label for="files" class="form-label">
+                                <i class="fas fa-file me-2"></i>Chọn file hợp đồng
+                            </label>
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-content text-center p-5">
+                                    <div class="upload-icon-large mb-3">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <h5 class="text-muted mb-3">Kéo thả file vào đây hoặc click để chọn</h5>
+                                    <p class="text-muted mb-4">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Hỗ trợ: PDF, PNG, JPG, JPEG, BMP, TIF, TIFF
+                                    </p>
+                                    <input type="file" name="files" id="files" multiple
+                                           class="form-control d-none"
+                                           accept=".pdf,.png,.jpg,.jpeg,.bmp,.tif,.tiff" required>
+                                    <button type="button" class="btn btn-primary btn-lg" onclick="document.getElementById('files').click()">
+                                        <i class="fas fa-folder-open me-2"></i>Chọn file
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="fileList" class="mt-3"></div>
+                        </div>
+
+                        <!-- Language Setting -->
+                        <div class="mb-4">
+                            <label for="lang" class="form-label">
+                                <i class="fas fa-language me-2"></i>Ngôn ngữ xử lý
+                            </label>
+                            <input type="text" name="lang" id="lang" value="vie+eng"
+                                   class="form-control" placeholder="Ngôn ngữ (e.g. vie+eng)" readonly>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Mặc định: Tiếng Việt + Tiếng Anh
+                            </small>
+                        </div>
+
+
+
+                        <!-- Submit Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <i class="fas fa-upload me-2"></i>Tải lên và xử lý
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Progress Section -->
+    <div class="row justify-content-center mt-5" data-aos="fade-up" data-aos-delay="400">
+        <div class="col-lg-8 col-md-10">
+            <div class="card" id="progressCard" style="display: none;">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: 0%" id="progressBar"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-muted mb-2" id="progressText">Đang tải lên file...</p>
+                        <small class="text-muted" id="progressDetail">0% hoàn thành</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions Section -->
+    <div class="row mt-5" data-aos="fade-up" data-aos-delay="600">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Hướng dẫn sử dụng
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="instruction-step text-center">
+                                <div class="step-icon mb-3">
+                                    <i class="fas fa-file"></i>
+                                </div>
+                                <h6>Bước 1: Chọn file</h6>
+                                <p class="text-muted small">Chọn file PDF hoặc ảnh hợp đồng cần xử lý</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="instruction-step text-center">
+                                <div class="step-icon mb-3">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <h6>Bước 2: Xử lý OCR</h6>
+                                <p class="text-muted small">Hệ thống sẽ tự động trích xuất văn bản</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="instruction-step text-center">
+                                <div class="step-icon mb-3">
+                                    <i class="fas fa-download"></i>
+                                </div>
+                                <h6>Bước 3: Tải xuống</h6>
+                                <p class="text-muted small">Tải xuống kết quả dạng TXT hoặc DOCX</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.upload-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 2rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.upload-area {
+    border: 2px dashed var(--secondary-300);
+    border-radius: var(--radius-xl);
+    background: var(--secondary-50);
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-500);
+    background: var(--primary-50);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.upload-area.dragover {
+    border-color: var(--primary-500);
+    background: var(--primary-100);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-lg);
+}
+
+.upload-icon-large {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    background: white;
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-sm);
+    border: 1px solid var(--secondary-200);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-smooth);
+}
+
+.file-item:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+.file-item .file-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.file-item .file-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--spacing-md);
+    color: white;
+    font-size: 1rem;
+}
+
+.file-item .file-name {
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+    color: var(--secondary-900);
+}
+
+.file-item .file-size {
+    font-size: 0.875rem;
+    color: var(--secondary-600);
+}
+
+.file-item .file-remove {
+    color: var(--danger-500);
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: 50%;
+    transition: var(--transition-smooth);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-item .file-remove:hover {
+    background: var(--danger-50);
+    color: var(--danger-600);
+    transform: scale(1.1);
+}
+
+.instruction-step {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    transition: var(--transition-smooth);
+}
+
+.instruction-step:hover {
+    background: var(--secondary-50);
+    transform: translateY(-4px);
+}
+
+.step-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 768px) {
+    .upload-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .upload-icon-large {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+    
+    .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+    
+    .file-item .file-info {
+        width: 100%;
+    }
+    
+    .file-item .file-remove {
+        align-self: flex-end;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('files');
+    const fileList = document.getElementById('fileList');
+    const uploadForm = document.getElementById('uploadForm');
+
+    // Contract types will be loaded when DOM is ready
+    const progressCard = document.getElementById('progressCard');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const progressDetail = document.getElementById('progressDetail');
+
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+    });
+
+    // Click to select files
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function() {
+        handleFiles(this.files);
+    });
+
+    function handleFiles(files) {
+        fileList.innerHTML = '';
+        Array.from(files).forEach(file => {
+            addFileToList(file);
+        });
+    }
+
+    function addFileToList(file) {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        const fileSize = (file.size / 1024 / 1024).toFixed(2);
+        const fileIcon = getFileIcon(file.type);
+        
+        fileItem.innerHTML = `
+            <div class="file-info">
+                <div class="file-icon">
+                    <i class="${fileIcon}"></i>
+                </div>
+                <div>
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${fileSize} MB</div>
+                </div>
+            </div>
+            <div class="file-remove" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </div>
+        `;
+        
+        fileList.appendChild(fileItem);
+    }
+
+    function getFileIcon(mimeType) {
+        if (mimeType.includes('pdf')) return 'fas fa-file-pdf';
+        if (mimeType.includes('image')) return 'fas fa-file-image';
+        return 'fas fa-file';
+    }
+
+    // Form submission - thực sự submit form thay vì simulate
+    uploadForm.addEventListener('submit', function(e) {
+        if (fileInput.files.length === 0) {
+            e.preventDefault();
+            alert('Vui lòng chọn ít nhất một file!');
+            return;
+        }
+
+        // Show progress
+        progressCard.style.display = 'block';
+        uploadForm.style.display = 'none';
+
+        // Let the form submit naturally - server will handle redirect
+    });
+
+    // Load contract types when page loads
+    loadContractTypes();
+});
+
+// Load contract types from API
+async function loadContractTypes() {
+    try {
+        const response = await fetch('/api/contract-types');
+        if (!response.ok) {
+            throw new Error('Failed to load contract types');
+        }
+        const contractTypes = await response.json();
+
+        const grid = document.getElementById('contractTypeGrid');
+
+        // Clear existing content to prevent duplicates
+        grid.innerHTML = '';
+
+        // Add "Auto detect" option
+        const autoCard = createContractTypeCard({
+            id: '',
+            name: 'Tự động nhận diện',
+            description: 'Để hệ thống AI tự động phân loại'
+        }, 'fas fa-magic');
+        grid.appendChild(autoCard);
+
+        // Add contract types
+        contractTypes.forEach(type => {
+            const card = createContractTypeCard(type, getContractTypeIcon(type.name));
+            grid.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error loading contract types:', error);
+        // Fallback: show auto detect only
+        const grid = document.getElementById('contractTypeGrid');
+        const autoCard = createContractTypeCard({
+            id: '',
+            name: 'Tự động nhận diện',
+            description: 'Để hệ thống AI tự động phân loại'
+        }, 'fas fa-magic');
+        grid.appendChild(autoCard);
+    }
+}
+
+// Create contract type card
+function createContractTypeCard(type, iconClass) {
+    const card = document.createElement('div');
+    card.className = 'contract-type-card';
+    card.dataset.typeId = type.id;
+
+    card.innerHTML = `
+        <div class="contract-type-icon">
+            <i class="${iconClass}"></i>
+        </div>
+        <div class="contract-type-name">${type.name}</div>
+        <div class="contract-type-desc">${type.description || ''}</div>
+    `;
+
+    card.addEventListener('click', function() {
+        // Remove selected class from all cards
+        document.querySelectorAll('.contract-type-card').forEach(c => {
+            c.classList.remove('selected');
+        });
+
+        // Add selected class to clicked card
+        this.classList.add('selected');
+
+        // Update hidden input
+        document.getElementById('selectedContractType').value = type.id;
+    });
+
+    return card;
+}
+
+// Get icon for contract type
+function getContractTypeIcon(typeName) {
+    const iconMap = {
+        // Hợp đồng kinh doanh cơ bản
+        'Mua bán': 'fas fa-handshake',
+        'Cung cấp': 'fas fa-truck-loading',
+        'Phân phối': 'fas fa-network-wired',
+        'Gia công': 'fas fa-industry',
+        'Vận chuyển': 'fas fa-shipping-fast',
+
+        // Hợp đồng dịch vụ
+        'Dịch vụ': 'fas fa-concierge-bell',
+        'Tư vấn': 'fas fa-user-graduate',
+        'Bảo trì': 'fas fa-tools',
+        'Thiết kế': 'fas fa-palette',
+        'Marketing': 'fas fa-bullhorn',
+        'IT': 'fas fa-laptop-code',
+        'Phần mềm': 'fas fa-code',
+
+        // Hợp đồng lao động và nhân sự
+        'Lao động': 'fas fa-user-tie',
+        'Thực tập': 'fas fa-graduation-cap',
+        'Cộng tác viên': 'fas fa-user-friends',
+        'Đào tạo': 'fas fa-chalkboard-teacher',
+
+        // Hợp đồng bất động sản
+        'Thuê mặt bằng': 'fas fa-building',
+        'Thuê nhà': 'fas fa-home',
+        'Thuê kho': 'fas fa-warehouse',
+        'Mua bán BĐS': 'fas fa-key',
+        'Thuê': 'fas fa-home',
+
+        // Hợp đồng tài chính
+        'Vay vốn': 'fas fa-money-bill-wave',
+        'Bảo lãnh': 'fas fa-shield-alt',
+        'Bảo hiểm': 'fas fa-umbrella',
+        'Đầu tư': 'fas fa-chart-line',
+
+        // Hợp đồng hợp tác
+        'Hợp tác': 'fas fa-users',
+        'Liên kết': 'fas fa-link',
+        'Nhượng quyền': 'fas fa-certificate',
+        'Đối tác': 'fas fa-handshake',
+
+        // Hợp đồng pháp lý và bảo mật
+        'Bảo mật': 'fas fa-shield-alt',
+        'NDA': 'fas fa-user-secret',
+        'Bản quyền': 'fas fa-copyright',
+        'Giấy phép': 'fas fa-id-card',
+        'Pháp lý': 'fas fa-gavel',
+
+        // Hợp đồng khung và đặc biệt
+        'Nguyên tắc': 'fas fa-balance-scale',
+        'Khung': 'fas fa-sitemap',
+        'MOU': 'fas fa-file-signature',
+        'LOI': 'fas fa-envelope-open-text',
+        'Sửa đổi': 'fas fa-edit',
+        'Phụ lục': 'fas fa-paperclip',
+
+        // Hợp đồng xuất nhập khẩu
+        'Xuất khẩu': 'fas fa-plane-departure',
+        'Nhập khẩu': 'fas fa-plane-arrival',
+        'Thương mại quốc tế': 'fas fa-globe-americas',
+
+        // Loại khác
+        'Khác': 'fas fa-file-contract'
+    };
+
+    for (const [key, icon] of Object.entries(iconMap)) {
+        if (typeName.includes(key)) {
+            return icon;
+        }
+    }
+
+    return 'fas fa-file-contract';
+}
+</script>
+{% endblock %}

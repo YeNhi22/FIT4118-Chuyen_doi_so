@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Báo cáo rủi ro pháp lý</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <h5 class="card-title text-danger">Rủi ro cao</h5>
+                <h2 class="text-danger">{{ high_risk_count }}</h2>
+                <p class="card-text">Cần xem xét ngay</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h5 class="card-title text-warning">Rủi ro trung bình</h5>
+                <h2 class="text-warning">{{ medium_risk_count }}</h2>
+                <p class="card-text">Cần lưu ý</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <h5 class="card-title text-info">Rủi ro thấp</h5>
+                <h2 class="text-info">{{ low_risk_count }}</h2>
+                <p class="card-text">Theo dõi</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <h5 class="card-title text-success">An toàn</h5>
+                <h2 class="text-success">{{ safe_count }}</h2>
+                <p class="card-text">Không có rủi ro</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Chi tiết rủi ro pháp lý</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Hợp đồng</th>
+                                <th>Đối tác</th>
+                                <th>Mức độ rủi ro</th>
+                                <th>Điều khoản bất thường</th>
+                                <th>Khuyến nghị</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for risk in legal_risks %}
+                            <tr class="{% if risk.risk_level == 'high' %}table-danger{% elif risk.risk_level == 'medium' %}table-warning{% elif risk.risk_level == 'low' %}table-info{% else %}table-success{% endif %}">
+                                <td>
+                                    <a href="/contract/{{ risk.contract_id }}" class="text-decoration-none">
+                                        {{ risk.contract_name }}
+                                    </a>
+                                </td>
+                                <td>{{ risk.partner_name or 'N/A' }}</td>
+                                <td>
+                                    <span class="badge {% if risk.risk_level == 'high' %}bg-danger{% elif risk.risk_level == 'medium' %}bg-warning{% elif risk.risk_level == 'low' %}bg-info{% else %}bg-success{% endif %}">
+                                        {{ risk.risk_level_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        {% for clause in risk.risk_clauses %}
+                                        <div class="mb-1">
+                                            <strong>{{ clause.type }}:</strong> {{ clause.description }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>{{ risk.recommendation or 'N/A' }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="reviewRisk({{ risk.contract_id }})">
+                                        Xem xét
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Tổng hợp rủi ro theo loại</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Điều khoản thanh toán</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for item in risk_summary.payment %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ item.description }}
+                                <span class="badge bg-{{ item.risk_color }} rounded-pill">{{ item.count }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Điều khoản bảo mật</h6>
+                        <ul class="list-group list-group-flush">
+                            {% for item in risk_summary.confidentiality %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ item.description }}
+                                <span class="badge bg-{{ item.risk_color }} rounded-pill">{{ item.count }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function reviewRisk(contractId) {
+    if (confirm('Bạn có muốn xem xét rủi ro của hợp đồng này?')) {
+        window.location.href = `/contract/${contractId}`;
+    }
+}
+</script>
+{% endblock %}

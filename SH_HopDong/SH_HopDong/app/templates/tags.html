@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Thẻ tag hợp đồng</h2>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#addTagForm">Thêm mới</button>
+    </div>
+    <div class="collapse" id="addTagForm">
+        <div class="card-body">
+            <form method="post" action="/tags">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">Tên thẻ</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Màu sắc (tùy chọn, ví dụ: #ff0000)</label>
+                        <input type="text" name="color" class="form-control">
+                    </div>
+                    <div class="col-12 d-grid mt-2">
+                        <button type="submit" class="btn btn-success">Lưu</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên thẻ</th>
+                    <th>Màu sắc</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tags %}
+                <tr>
+                    <td>{{ t.id }}</td>
+                    <td>{{ t.name }}</td>
+                    <td><span class="badge" style="background: {{ t.color or '#eee' }}; color: #222;">{{ t.color or '' }}</span></td>
+                    <td>
+                        <form method="post" action="/tags/{{ t.id }}/delete" style="display:inline-block" onsubmit="return confirm('Xóa thẻ này?');">
+                            <button class="btn btn-danger btn-sm">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

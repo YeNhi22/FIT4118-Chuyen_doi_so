@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Lịch sử chỉnh sửa</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <h5 class="card-title text-primary">Tổng thay đổi</h5>
+                <h2 class="text-primary">{{ total_changes }}</h2>
+                <p class="card-text">Trong tháng này</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <h5 class="card-title text-success">Hợp đồng đã chỉnh sửa</h5>
+                <h2 class="text-success">{{ contracts_modified }}</h2>
+                <p class="card-text">Số hợp đồng</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <h5 class="card-title text-info">Người dùng hoạt động</h5>
+                <h2 class="text-info">{{ active_users }}</h2>
+                <p class="card-text">Đã chỉnh sửa</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h5 class="card-title text-warning">Thay đổi gần đây</h5>
+                <h2 class="text-warning">{{ recent_changes }}</h2>
+                <p class="card-text">Trong 7 ngày</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Bộ lọc</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Từ ngày</label>
+                        <input type="date" name="from_date" class="form-control" value="{{ request.query_params.get('from_date', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Đến ngày</label>
+                        <input type="date" name="to_date" class="form-control" value="{{ request.query_params.get('to_date', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Người dùng</label>
+                        <select name="user" class="form-select">
+                            <option value="">Tất cả</option>
+                            {% for user in users %}
+                            <option value="{{ user.id }}" {% if request.query_params.get('user') == user.id|string %}selected{% endif %}>
+                                {{ user.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Loại thay đổi</label>
+                        <select name="change_type" class="form-select">
+                            <option value="">Tất cả</option>
+                            <option value="content" {% if request.query_params.get('change_type') == 'content' %}selected{% endif %}>Nội dung</option>
+                            <option value="status" {% if request.query_params.get('change_type') == 'status' %}selected{% endif %}>Trạng thái</option>
+                            <option value="metadata" {% if request.query_params.get('change_type') == 'metadata' %}selected{% endif %}>Thông tin</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Lọc</button>
+                        <a href="/reports/history" class="btn btn-outline-secondary">Làm mới</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Lịch sử thay đổi</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Người dùng</th>
+                                <th>Hợp đồng</th>
+                                <th>Loại thay đổi</th>
+                                <th>Chi tiết</th>
+                                <th>Trước</th>
+                                <th>Sau</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for change in changes %}
+                            <tr>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ change.timestamp.strftime('%d/%m/%Y %H:%M') }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ change.user_name }}</span>
+                                </td>
+                                <td>
+                                    <a href="/contract/{{ change.contract_id }}" class="text-decoration-none">
+                                        {{ change.contract_name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if change.change_type == 'content' else 'warning' if change.change_type == 'status' else 'info' }}">
+                                        {{ change.change_type_display }}
+                                    </span>
+                                </td>
+                                <td>{{ change.description }}</td>
+                                <td>
+                                    <div class="small text-muted">
+                                        {{ change.old_value or 'N/A' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small text-success">
+                                        {{ change.new_value or 'N/A' }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info" onclick="viewChangeDetails({{ change.id }})">
+                                        Chi tiết
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if changes|length > 10 %}
+                <nav aria-label="Phân trang">
+                    <ul class="pagination justify-content-center">
+                        {% if page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page - 1 }}&{{ request.query_params|urlencode }}">Trước</a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for p in range(1, total_pages + 1) %}
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="?page={{ p }}&{{ request.query_params|urlencode }}">{{ p }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if page < total_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page + 1 }}&{{ request.query_params|urlencode }}">Sau</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal chi tiết thay đổi -->
+<div class="modal fade" id="changeDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi tiết thay đổi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="changeDetailsContent">
+                <!-- Nội dung sẽ được load động -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewChangeDetails(changeId) {
+    // TODO: Load change details via AJAX
+    document.getElementById('changeDetailsContent').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('changeDetailsModal'));
+    modal.show();
+    
+    // Simulate loading
+    setTimeout(() => {
+        document.getElementById('changeDetailsContent').innerHTML = `
+            <p>Chi tiết thay đổi ID: ${changeId}</p>
+            <p>Chức năng này sẽ được phát triển sau để hiển thị đầy đủ thông tin về thay đổi.</p>
+        `;
+    }, 1000);
+}
+</script>
+{% endblock %}

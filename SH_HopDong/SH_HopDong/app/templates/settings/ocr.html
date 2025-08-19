@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Cấu hình OCR</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Cài đặt nhận dạng văn bản</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/settings/ocr">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Ngôn ngữ chính *</label>
+                            <select name="primary_language" class="form-select" required>
+                                <option value="vie" {% if ocr_config.primary_language == 'vie' %}selected{% endif %}>Tiếng Việt</option>
+                                <option value="eng" {% if ocr_config.primary_language == 'eng' %}selected{% endif %}>Tiếng Anh</option>
+                                <option value="vie+eng" {% if ocr_config.primary_language == 'vie+eng' %}selected{% endif %}>Tiếng Việt + Tiếng Anh</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ngôn ngữ phụ</label>
+                            <select name="secondary_language" class="form-select">
+                                <option value="">Không có</option>
+                                <option value="eng" {% if ocr_config.secondary_language == 'eng' %}selected{% endif %}>Tiếng Anh</option>
+                                <option value="vie" {% if ocr_config.secondary_language == 'vie' %}selected{% endif %}>Tiếng Việt</option>
+                                <option value="chi_sim" {% if ocr_config.secondary_language == 'chi_sim' %}selected{% endif %}>Tiếng Trung (Giản thể)</option>
+                                <option value="jpn" {% if ocr_config.secondary_language == 'jpn' %}selected{% endif %}>Tiếng Nhật</option>
+                                <option value="kor" {% if ocr_config.secondary_language == 'kor' %}selected{% endif %}>Tiếng Hàn</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Chất lượng OCR *</label>
+                            <select name="ocr_quality" class="form-select" required>
+                                <option value="fast" {% if ocr_config.ocr_quality == 'fast' %}selected{% endif %}>Nhanh (Độ chính xác thấp)</option>
+                                <option value="balanced" {% if ocr_config.ocr_quality == 'balanced' %}selected{% endif %}>Cân bằng</option>
+                                <option value="accurate" {% if ocr_config.ocr_quality == 'accurate' %}selected{% endif %}>Chính xác (Chậm)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Xử lý hình ảnh</label>
+                            <select name="image_processing" class="form-select">
+                                <option value="none" {% if ocr_config.image_processing == 'none' %}selected{% endif %}>Không xử lý</option>
+                                <option value="basic" {% if ocr_config.image_processing == 'basic' %}selected{% endif %}>Cơ bản (Làm sạch)</option>
+                                <option value="advanced" {% if ocr_config.image_processing == 'advanced' %}selected{% endif %}>Nâng cao (Tối ưu hóa)</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Cài đặt nâng cao</label>
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="enable_preprocessing" id="preprocessing" 
+                                               {% if ocr_config.enable_preprocessing %}checked{% endif %}>
+                                        <label class="form-check-label" for="preprocessing">
+                                            Bật tiền xử lý hình ảnh
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="enable_postprocessing" id="postprocessing"
+                                               {% if ocr_config.enable_postprocessing %}checked{% endif %}>
+                                        <label class="form-check-label" for="postprocessing">
+                                            Bật hậu xử lý văn bản
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="enable_confidence_check" id="confidence"
+                                               {% if ocr_config.enable_confidence_check %}checked{% endif %}>
+                                        <label class="form-check-label" for="confidence">
+                                            Kiểm tra độ tin cậy
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="enable_auto_correction" id="autocorrect"
+                                               {% if ocr_config.enable_auto_correction %}checked{% endif %}>
+                                        <label class="form-check-label" for="autocorrect">
+                                            Tự động sửa lỗi
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Ngưỡng tin cậy tối thiểu (%)</label>
+                            <input type="number" name="confidence_threshold" class="form-control" 
+                                   value="{{ ocr_config.confidence_threshold or 70 }}" min="0" max="100">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Thời gian timeout (giây)</label>
+                            <input type="number" name="timeout_seconds" class="form-control" 
+                                   value="{{ ocr_config.timeout_seconds or 300 }}" min="30" max="1800">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="resetToDefault()">Khôi phục mặc định</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Thống kê OCR</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Hôm nay</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Đã xử lý:</span>
+                        <strong>{{ ocr_stats.today_processed }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Thành công:</span>
+                        <strong class="text-success">{{ ocr_stats.today_success }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Thất bại:</span>
+                        <strong class="text-danger">{{ ocr_stats.today_failed }}</strong>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Tháng này</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Tổng cộng:</span>
+                        <strong>{{ ocr_stats.month_total }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Tỷ lệ thành công:</span>
+                        <strong class="text-success">{{ "%.1f"|format(ocr_stats.month_success_rate) }}%</strong>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Hiệu suất</h6>
+                    <div class="d-flex justify-content-between">
+                        <span>Thời gian trung bình:</span>
+                        <strong>{{ "%.1f"|format(ocr_stats.avg_processing_time) }}s</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Độ chính xác:</span>
+                        <strong class="text-info">{{ "%.1f"|format(ocr_stats.accuracy_rate) }}%</strong>
+                    </div>
+                </div>
+                
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="testOCR()">
+                    <i class="bi bi-play-circle"></i> Kiểm tra OCR
+                </button>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Ngôn ngữ được hỗ trợ</h5>
+            </div>
+            <div class="card-body">
+                <div class="small">
+                    <div class="mb-2">
+                        <strong>Tiếng Việt:</strong> Hỗ trợ đầy đủ
+                    </div>
+                    <div class="mb-2">
+                        <strong>Tiếng Anh:</strong> Hỗ trợ đầy đủ
+                    </div>
+                    <div class="mb-2">
+                        <strong>Tiếng Trung:</strong> Hỗ trợ cơ bản
+                    </div>
+                    <div class="mb-2">
+                        <strong>Tiếng Nhật:</strong> Hỗ trợ cơ bản
+                    </div>
+                    <div class="mb-2">
+                        <strong>Tiếng Hàn:</strong> Hỗ trợ cơ bản
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function resetToDefault() {
+    if (confirm('Bạn có muốn khôi phục cài đặt OCR về mặc định?')) {
+        // TODO: Implement reset to default
+        alert('Đã khôi phục cài đặt mặc định');
+        location.reload();
+    }
+}
+
+function testOCR() {
+    // TODO: Implement OCR test
+    alert('Chức năng kiểm tra OCR sẽ được phát triển sau');
+}
+</script>
+{% endblock %}
