@@ -99,7 +99,8 @@ source .venv/bin/activate  # Linux/Mac</code></pre>
         </ul>
       </li>
       <li>Chạy ứng dụng:
-        <pre><code>python -m uvicorn app.main:app --reload</code></pre>
+        <pre><code>.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
+</code></pre>
         hoặc
         <pre><code>run_app.bat  # Windows
 run_app.ps1  # PowerShell</code></pre>
