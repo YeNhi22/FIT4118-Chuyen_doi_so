@@ -36,7 +36,6 @@
         </ul>
       </li>
     </ul>
-
     <h3>Công nghệ OCR và xử lý văn bản</h3>
     <ul>
       <li><strong>OCR Engine:</strong> Tesseract với hỗ trợ tiếng Việt</li>
@@ -45,7 +44,6 @@
       <li><strong>Phân tích văn bản:</strong> Regex patterns và NLP cơ bản</li>
       <li><strong>Xuất file:</strong> python-docx cho định dạng Word</li>
     </ul>
-
     <h3>Công nghệ phát triển</h3>
     <ul>
       <li>Python 3.x</li>
@@ -57,7 +55,6 @@
       <li>Bootstrap</li>
       <li>SQLite/SQL Server</li>
     </ul>
-
     <h3>Cấu trúc dự án</h3>
     <ul>
       <li><code>app/main.py</code> - Ứng dụng FastAPI chính</li>
@@ -80,7 +77,6 @@
       <li><code>uploads/</code> - Thư mục file tải lên</li>
       <li><code>outputs/</code> - Thư mục file đã xử lý</li>
     </ul>
-
     <h3>Hướng dẫn cài đặt</h3>
     <ol>
       <li>Clone repository:
@@ -110,7 +106,6 @@ run_app.ps1  # PowerShell</code></pre>
       </li>
       <li>Truy cập ứng dụng tại: <code>http://127.0.0.1:8000</code></li>
     </ol>
-
     <h3>Hướng dẫn sử dụng</h3>
     <ol>
       <li><strong>Tải lên hợp đồng:</strong>
@@ -136,7 +131,6 @@ run_app.ps1  # PowerShell</code></pre>
         </ul>
       </li>
     </ol>
-
     <h3>Tính năng nổi bật</h3>
     <ul>
       <li><strong>OCR chính xác cao:</strong> Hỗ trợ tiếng Việt với độ chính xác cao</li>
@@ -146,7 +140,6 @@ run_app.ps1  # PowerShell</code></pre>
       <li><strong>Báo cáo chi tiết:</strong> Thống kê và theo dõi trạng thái</li>
       <li><strong>Xuất đa định dạng:</strong> Word, Text, JSON</li>
     </ul>
-
     <h3>API Endpoints</h3>
     <ul>
       <li><code>GET /</code> - Trang chủ với thống kê</li>
@@ -157,7 +150,6 @@ run_app.ps1  # PowerShell</code></pre>
       <li><code>GET /partners</code> - Quản lý đối tác</li>
       <li><code>GET /settings/ocr</code> - Cài đặt OCR</li>
     </ul>
-
     <h3>Cấu hình OCR</h3>
     <ul>
       <li><strong>Ngôn ngữ chính:</strong> vie+eng (Tiếng Việt + Tiếng Anh)</li>
@@ -166,7 +158,6 @@ run_app.ps1  # PowerShell</code></pre>
       <li><strong>Ngưỡng tin cậy:</strong> 70% (có thể điều chỉnh)</li>
       <li><strong>Timeout:</strong> 300 giây cho mỗi file</li>
     </ul>
-
     <h3>Yêu cầu hệ thống</h3>
     <ul>
       <li>Python 3.7+</li>
@@ -175,7 +166,6 @@ run_app.ps1  # PowerShell</code></pre>
       <li>Ổ cứng: 2GB trống cho dữ liệu</li>
       <li>Trình duyệt: Chrome, Firefox, Safari, Edge</li>
     </ul>
-
     <h3>Thư viện chính</h3>
     <ul>
       <li><strong>FastAPI:</strong> Web framework hiện đại</li>
@@ -185,7 +175,6 @@ run_app.ps1  # PowerShell</code></pre>
       <li><strong>Pillow:</strong> Xử lý hình ảnh</li>
       <li><strong>python-docx:</strong> Tạo file Word</li>
     </ul>
-
     <h3>Lưu ý quan trọng</h3>
     <p><strong>⚠️ Quan trọng:</strong></p>
     <ul>
@@ -195,14 +184,12 @@ run_app.ps1  # PowerShell</code></pre>
       <li>Dữ liệu được lưu trong SQLite, có thể chuyển sang SQL Server</li>
       <li>Backup dữ liệu thường xuyên trong môi trường production</li>
     </ul>
-
     <h3>Giao diện ứng dụng</h3>
     <p><strong>Dashboard quản lý hợp đồng với OCR tự động:</strong></p>
     <div align="center">
       Contract Management Dashboard<br>
       <small>Giao diện quản lý hợp đồng thông minh</small>
     </div>
-
     <div align="center">
       <strong>Phát triển bởi:</strong><br>
       <em>Dự án Số hóa Hợp đồng</em><br>
