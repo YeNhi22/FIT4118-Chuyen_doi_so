@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Số hóa và Quản lý Hợp đồng</title>
 </head>
 <body>
     <h2 align="center">Hệ thống Số hóa và Quản lý Hợp đồng</h2>
-    
     <p>
         Dự án được xây dựng bằng Python và FastAPI, nhằm thực hiện việc số hóa, phân tích và quản lý hợp đồng tự động sử dụng công nghệ OCR (Optical Character Recognition) và xử lý ngôn ngữ tự nhiên.
     </p>
-
     <h3>Chức năng của ứng dụng</h3>
     <ul>
       <li><strong>Số hóa hợp đồng tự động:</strong>
