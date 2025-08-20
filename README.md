@@ -189,7 +189,7 @@ run_app.ps1  # PowerShell</code></pre>
     <h3>Giao diện ứng dụng</h3>
     <p><strong>Giao diện trang chủ:</strong></p>
     <p align="center">
-      <img src="" alt="Giao diện chat bảo mật" width="800">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/1.png" alt="Giao diện chat bảo mật" width="800">
     </p>
     <div align="center">
       <strong>Phát triển bởi:</strong><br>
