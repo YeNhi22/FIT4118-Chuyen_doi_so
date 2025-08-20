@@ -189,12 +189,58 @@ run_app.ps1  # PowerShell</code></pre>
     <h3>Giao diện ứng dụng</h3>
     <p><strong>Giao diện trang chủ:</strong></p>
     <p align="center">
-      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/1.png" alt="Giao diện chat bảo mật" width="800">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/1.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/2.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/3.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/4.png" width="800">
+    </p>
+    <p><strong>Giao diện trang tải lên hợp đồng:</strong></p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/5.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/6.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/7.png" width="800">
+    </p>
+    <p><strong>Giao diện trang tìm kiếm:</strong></p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/8.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/9.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/10.png" width="800">
+    </p>
+    <p><strong>Giao diện trang chi tiết hợp đồng:</strong></p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/11.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/12.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/13.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/14.png" width="800">
+    </p>
+    <p align="center">
+      <img src="https://github.com/YeNhi22/FIT4118-Chuyen_doi_so/blob/main/15.png" width="800">
     </p>
     <div align="center">
       <strong>Phát triển bởi:</strong><br>
-      <em>Dự án Số hóa Hợp đồng</em><br>
-      <em>Sử dụng công nghệ OCR và AI</em>
+      <em>Nhóm 8 - Lớp CNTT 17-02</em><br>
+      <em>Khoa Công nghệ Thông tin - Đại học Đại Nam</em><br>
+      <em>Môn: Công nghệ thông tin trong Chuyển đổi số</em>
     </div>
 </body>
 </html>
