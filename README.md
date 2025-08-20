@@ -80,7 +80,7 @@
     <h3>Hướng dẫn cài đặt</h3>
     <ol>
       <li>Clone repository:
-        <pre><code>git clone https://github.com/your-repo/contract-digitization.git
+        <pre><code>git clone https://github.com/YeNhi22/FIT4118-Chuyen_doi_so.git
 cd contract-digitization</code></pre>
       </li>
       <li>Tạo môi trường ảo:
