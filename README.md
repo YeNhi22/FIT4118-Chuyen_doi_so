@@ -187,11 +187,10 @@ run_app.ps1  # PowerShell</code></pre>
       <li>Backup dữ liệu thường xuyên trong môi trường production</li>
     </ul>
     <h3>Giao diện ứng dụng</h3>
-    <p><strong>Dashboard quản lý hợp đồng với OCR tự động:</strong></p>
-    <div align="center">
-      Contract Management Dashboard<br>
-      <small>Giao diện quản lý hợp đồng thông minh</small>
-    </div>
+    <p><strong>Giao diện trang chủ:</strong></p>
+    <p align="center">
+      <img src="" alt="Giao diện chat bảo mật" width="800">
+    </p>
     <div align="center">
       <strong>Phát triển bởi:</strong><br>
       <em>Dự án Số hóa Hợp đồng</em><br>
