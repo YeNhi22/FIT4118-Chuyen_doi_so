@@ -111,6 +111,7 @@ run_app.ps1  # PowerShell</code></pre>
       <li><strong>Tải lên hợp đồng:</strong>
         <ul>
           <li>Vào trang "Tải lên" từ menu chính</li>
+          <li>Chọn loại hợp đồng</li>
           <li>Chọn file PDF hoặc hình ảnh hợp đồng</li>
           <li>Chọn ngôn ngữ OCR (Tiếng Việt + Tiếng Anh)</li>
           <li>Nhấn "Tải lên" để xử lý</li>
@@ -160,7 +161,7 @@ run_app.ps1  # PowerShell</code></pre>
     </ul>
     <h3>Yêu cầu hệ thống</h3>
     <ul>
-      <li>Python 3.7+</li>
+      <li>Python 3.10+</li>
       <li>Tesseract OCR 4.0+</li>
       <li>RAM: Tối thiểu 4GB (khuyến nghị 8GB+)</li>
       <li>Ổ cứng: 2GB trống cho dữ liệu</li>
