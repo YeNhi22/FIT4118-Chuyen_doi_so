@@ -11,6 +11,7 @@
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
+            color: #24292e;
         }
         .container {
             max-width: 1200px;
@@ -129,6 +130,24 @@
             margin: 20px auto;
             text-align: center;
         }
+        a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            h2 {
+                font-size: 2em;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -232,7 +251,7 @@ source .venv/bin/activate  # Linux/Mac</code></pre>
             </li>
             <li>Cài đặt Tesseract OCR:
                 <ul>
-                    <li>Windows: Tải từ <a href="https://github.com/UB-Mannheim/tesseract/wiki">GitHub Tesseract</a></li>
+                    <li>Windows: Tải từ <a href="https://github.com/UB-Mannheim/tesseract/wiki" target="_blank">GitHub Tesseract</a></li>
                     <li>Linux: <code>sudo apt-get install tesseract-ocr tesseract-ocr-vie</code></li>
                     <li>Mac: <code>brew install tesseract tesseract-lang</code></li>
                 </ul>
